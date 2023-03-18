@@ -58,9 +58,10 @@ def main():
 	hex_height = int(hex_width * 0.8660254)
 	hexagon_poss = []
 	grid_width = int(width/hex_width/2)
-	if grid_width%2: grid_width -= 1
+	if grid_width%2: grid_width -= 1 #we only want an even number of columns
 	grid_height = int(height/hex_radius)
 	if grid_height%2: grid_height -= 1 #we only want an even number of rows
+	grid_total = grid_width*grid_height
 	hex_counter = 0
 	for y in range(grid_height):
 		y_offset = hex_height * y / 2 + 20
@@ -82,48 +83,78 @@ def main():
 			#calculate neighbor offsets once and store in hexagon_poss
 			if y == 0: #top row
 				if x == 0: #top left corner
-					hex_neightbor_offsets = [grid_width,
+					hex_neighbor_offsets = [grid_width,
 												grid_width+1,
-												grid_width*grid_height-grid_width,
-												grid_width*grid_height-grid_width+1,
+												grid_total-grid_width,
+												grid_total-grid_width+1,
 												grid_width*2,
-												grid_width*grid_height-grid_width*2]
+												grid_total-grid_width*2]
 				elif x == grid_width-1: #top right corner
 					hex_neighbor_offsets = [grid_width,
 												1,
-												grid_width*grid_height-grid_width,
-												grid_width*grid_height-grid_width*2+1,
+												grid_total-grid_width,
+												grid_total-grid_width*2+1,
 												grid_width*2,
-												grid_width*grid_height-grid_width*2]
+												grid_total-grid_width*2]
 				else:#rest of top row
 					hex_neighbor_offsets = [grid_width,
 												grid_width+1,
-												grid_width*grid_height-grid_width,
-												grid_width*grid_height-grid_width+1,
+												grid_total-grid_width,
+												grid_total-grid_width+1,
 												grid_width*2,
-												grid_width*grid_height-grid_width*2]
+												grid_total-grid_width*2]
+			elif y == 1: #second row
+				if x == 0:
+					hex_neighbor_offsets = [-1,
+												grid_width-1,
+												-grid_width,
+												grid_width,
+												grid_total-grid_width*2,
+												grid_width*2]
+				else:
+					hex_neighbor_offsets = [-grid_width-1,
+												grid_width-1,
+												grid_width,
+												-grid_width,
+												grid_total-grid_width*2,
+												grid_width*2]
+			elif y == grid_height-2: #second to bottom row
+				if x == grid_width-1:
+					hex_neighbor_offsets = [-grid_width,
+												grid_width,
+												-grid_width*2+1,
+												+1,
+												-grid_width*2,
+												-grid_total+grid_width*2]
+				else:
+					hex_neighbor_offsets = [-grid_width,
+												grid_width,
+												-grid_width+1,
+												grid_width+1,
+												-grid_width*2,
+												-grid_total+grid_width*2]
 			elif y == grid_height-1: #bottom row
 				if x == 0: #bottom left corner
-					hex_neightbor_offsets = [-1,
+					hex_neighbor_offsets = [-1,
+												-grid_total+grid_width*2-1,
+												-grid_total+grid_width,
 												-grid_width,
-												-grid_width*grid_height+grid_width-1,
-												-grid_width*grid_height+grid_width,
 												-grid_width*2,
-												-grid_width*grid_height+grid_width*2]
+												-grid_total+grid_width*2]
 				elif x == grid_width-1: #bottom right corner
 					hex_neighbor_offsets = [-grid_width-1,
 												-grid_width,
-												-grid_width*grid_height+grid_width-1,
-												-grid_width*grid_height+grid_width,
+												-grid_total+grid_width-1,
+												-grid_total+grid_width,
 												-grid_width*2,
-												-grid_width*grid_height+grid_width*2]
+												-grid_total+grid_width*2]
 				else: #the rest of the bottom row
 					hex_neighbor_offsets = [-grid_width-1,
 												-grid_width,
-												-grid_width*grid_height+grid_width-1,
-												-grid_width*grid_height+grid_width,
+												-grid_total+grid_width-1,
+												-grid_total+grid_width,
 												-grid_width*2,
-												-grid_width*grid_height+grid_width*2]
+												-grid_total+grid_width*2]
 			else: #interior rows
 				if y%2 and x == 0: #leftmost tile
 					hex_neightbor_offsets = [-1,
@@ -198,13 +229,15 @@ def main():
 												(x_offset + 3*hex_width/4,y_offset),
 												(x_offset + hex_width/4,y_offset)]
 											,0)
+			#draw hex numbers for debugging:
 			#screen.blit(font.render(str(k), True, 'White'), (x_offset+hex_width/2-5, y_offset+hex_height/2-5))
 			#compute next iteration
 			neighbor_count = 0
 			for offset in pos[3]:
-				if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
-					if hexagon_poss[k+offset][1]:
-						neighbor_count += 1
+				#if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
+				if hexagon_poss[k+offset][1]:
+					neighbor_count += 1
+				#else: print('out of bounds: ',k,'+',offset)
 			survival, birth = explode_rules(ruleset)
 			if pos[1]:
 				#survival rules
@@ -218,6 +251,17 @@ def main():
 					hexagon_poss[k] = [pos[0],1,neighbor_count,pos[3]]
 				else:
 					hexagon_poss[k] = [pos[0],0,neighbor_count,pos[3]]
+		#overlay grid
+		for k,pos in enumerate(hexagon_poss):
+			x_offset = pos[0].x
+			y_offset = pos[0].y
+			pygame.draw.polygon(screen,'White',[(x_offset,y_offset + hex_height/2),
+												(x_offset + hex_width/4,y_offset + hex_height),
+												(x_offset + 3*hex_width/4,y_offset + hex_height),
+												(x_offset + hex_width,y_offset + hex_height/2),
+												(x_offset + 3*hex_width/4,y_offset),
+												(x_offset + hex_width/4,y_offset)]
+											,1)
 		manager.draw_ui(screen)
 		pygame.display.update()
 	main()
