@@ -5,10 +5,11 @@ import random
 import math
 
 pygame.init()
-width = 800
+width = 1024
 height = 600
 pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height))
+font = pygame.font.SysFont(None, 24)
 fps = 60
 ruleset = '23/2'
 hex_width = 50
@@ -56,17 +57,17 @@ def main():
 	hex_radius = hex_width / 2
 	hex_height = int(hex_width * 0.8660254)
 	hexagon_poss = []
-	grid_width = int(3*width/hex_width/4)
-	grid_height = int(1.2*height/hex_radius)
+	grid_width = int(width/hex_width/2)
+	grid_height = int(height/hex_radius)
 	hex_counter = 0
 	for y in range(grid_height):
-		y_offset = hex_height * y / 2
+		y_offset = hex_height * y / 2 + 20
 		for x in range(grid_width):
 			
 			if not y%2:
-				x_offset = (hex_width + hex_width / 2 ) * x
+				x_offset = (hex_width + hex_width / 2 ) * x +150
 			else:
-				x_offset = (hex_width + hex_width / 2 ) * x - 3 * hex_width / 4
+				x_offset = (hex_width + hex_width / 2 ) * x - 3 * hex_width / 4 +150
 			
 			hexagon = pygame.draw.polygon(screen,'Black',[(x_offset,y_offset + hex_height/2),
 										(x_offset + hex_width/4,y_offset + hex_height),
@@ -97,6 +98,7 @@ def main():
 			manager.process_events(event)
 		manager.update(time_delta)
 		screen.blit(background, (0, 0))
+		
 		for k,pos in enumerate(hexagon_poss):
 			x_offset = pos[0].x
 			y_offset = pos[0].y
@@ -116,17 +118,26 @@ def main():
 												(x_offset + 3*hex_width/4,y_offset),
 												(x_offset + hex_width/4,y_offset)]
 											,0)
-			neighbors = []
-			neighbor_count = 0
+			#screen.blit(font.render(str(k), True, 'White'), (x_offset+hex_width/2-5, y_offset+hex_height/2-5))
 			
-			neighborhood_index_offsets = [-grid_width, #not too sure about these offsets
+			#determine if k is in an odd or even row because the offsets change in a hex grid
+			row = int(k/grid_width)
+			if row%2:
+				neighborhood_index_offsets = [-grid_width,
 											-grid_width+1,
 											grid_width+1,
 											grid_width,
 											grid_width*2,
 											-grid_width*2]
-			
-			#print(neighborhood_index_offsets)
+			else:
+				neighborhood_index_offsets = [-grid_width,
+											-grid_width-1,
+											grid_width-1,
+											grid_width,
+											grid_width*2,
+											-grid_width*2]
+			neighbors = []
+			neighbor_count = 0
 			for offset in neighborhood_index_offsets:
 				if k+offset > 0 and k+offset < grid_width*grid_height:
 					if hexagon_poss[k+offset][1]:
