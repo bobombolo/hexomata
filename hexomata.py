@@ -56,7 +56,7 @@ def main():
 	
 	hex_radius = hex_width / 2
 	hex_height = int(hex_width * 0.8660254)
-	hexagon_poss = []
+	hexagons = []
 	grid_width = int(width/hex_width/2)
 	if grid_width%2: grid_width -= 1 #we only want an even number of columns
 	grid_height = int(height/hex_radius)
@@ -80,7 +80,7 @@ def main():
 										(x_offset + hex_width/4,y_offset)]
 									,1)
 			hex_neighbor_offsets = []
-			#calculate neighbor offsets once and store in hexagon_poss
+			#calculate neighbor offsets once and store in hexagons
 			if y == 0: #top row
 				if x == 0: #top left corner
 					hex_neighbor_offsets = [grid_width,
@@ -155,21 +155,22 @@ def main():
 												-grid_total+grid_width,
 												-grid_width*2,
 												-grid_total+grid_width*2]
-			else: #interior rows
-				if y%2 and x == 0: #leftmost tile
+			else: #interior rows alternating left and rightmost tiles
+				if y%2 and x == 0: #leftmost tile on even rows
 					hex_neightbor_offsets = [-1,
 												grid_width*2-1,
 												-grid_width,
 												grid_width,
 												-grid_width*2,
 												grid_width*2]
-				elif not y%2 and x == grid_width-1: #rightmost tile
+				elif not y%2 and x == grid_width-1: #rightmost tile on odd rows
 					hex_neighbor_offsets = [1,
 												-grid_width*2+1,
 												-grid_width,
 												grid_width,
 												-grid_width*2,
 												grid_width*2]
+			#any remaining tiles are interior tiles:
 			if hex_neighbor_offsets == []:
 				if y%2:
 					hex_neighbor_offsets = [-grid_width,
@@ -185,8 +186,8 @@ def main():
 											grid_width,
 											grid_width*2,
 											-grid_width*2]
-			#hexagon_poss index-> 0=rect, 1=state, 2=neighbor_count, 3=neighbor_offsets
-			hexagon_poss.insert(hex_counter,[hexagon,random.randint(0,1),0,hex_neighbor_offsets])
+			#hexagons index-> 0=rect, 1=state, 2=neighbor_count, 3=neighbor_offsets
+			hexagons.insert(hex_counter,[hexagon,random.randint(0,1),0,hex_neighbor_offsets])
 			hex_counter += 1
 	while is_running:
 		time_delta = clock.tick(fps)/1000.0
@@ -210,7 +211,7 @@ def main():
 		screen.blit(background, (0, 0))
 		#draw last iteration
 		survival, birth = explode_rules(ruleset)
-		for k,pos in enumerate(hexagon_poss):
+		for k,pos in enumerate(hexagons):
 			x_offset = pos[0].x
 			y_offset = pos[0].y
 			color='Black'
@@ -235,24 +236,24 @@ def main():
 			neighbor_count = 0
 			for offset in pos[3]:
 				#if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
-				if hexagon_poss[k+offset][1]:
+				if hexagons[k+offset][1]:
 					neighbor_count += 1
 				#else: print('out of bounds: ',k,'+',offset)
 			survival, birth = explode_rules(ruleset)
 			if pos[1]:
 				#survival rules
 				if neighbor_count in survival:
-					hexagon_poss[k] = [pos[0],1,neighbor_count,pos[3]]
+					hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
 				else:
-					hexagon_poss[k] = [pos[0],0,neighbor_count,pos[3]]
+					hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
 			if not pos[1]:
 				#birth rules
 				if neighbor_count in birth:
-					hexagon_poss[k] = [pos[0],1,neighbor_count,pos[3]]
+					hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
 				else:
-					hexagon_poss[k] = [pos[0],0,neighbor_count,pos[3]]
+					hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
 		#overlay grid
-		for k,pos in enumerate(hexagon_poss):
+		for k,pos in enumerate(hexagons):
 			x_offset = pos[0].x
 			y_offset = pos[0].y
 			pygame.draw.polygon(screen,'White',[(x_offset,y_offset + hex_height/2),
