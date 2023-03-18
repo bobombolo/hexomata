@@ -9,6 +9,7 @@ width = 800
 height = 600
 pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height))
+ruleset = '23/2'
 
 def explode_rules(ruleset):
 	survival = []
@@ -19,8 +20,9 @@ def explode_rules(ruleset):
 	for char in splitstring[1]:
 		birth.append(int(char))
 	return survival, birth
+	
 def main():
-	ruleset = '23/2'
+	global ruleset
 	background = pygame.Surface((width, height))
 	background.fill((0,0,0))
 	manager = pygame_gui.UIManager((width, height))
