@@ -13,6 +13,8 @@ font = pygame.font.SysFont(None, 24)
 fps = 60
 ruleset = '23/2'
 hex_width = 50
+show_grid = True
+show_numbers = False
 def explode_rules(ruleset):
 	survival = []
 	birth = []
@@ -27,6 +29,8 @@ def main():
 	global ruleset
 	global fps
 	global hex_width
+	global show_grid
+	global show_numbers
 	background = pygame.Surface((width, height))
 	background.fill((0,0,0))
 	manager = pygame_gui.UIManager((width, height))
@@ -48,6 +52,12 @@ def main():
 	hexwidth_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 130), (100, 30)),
 														manager=manager,
 														initial_text=str(hex_width))
+	showgrid_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 160), (100, 30)),
+														text='Show Grid',
+														manager=manager)
+	shownumbers_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 190), (100, 30)),
+														text='Show Nums',
+														manager=manager)
 	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((width/2-100,height-30),(200,20)),
 														manager=manager,
 														text='SPACE to reset')
@@ -205,6 +215,17 @@ def main():
 				if event.ui_element == hexwidth_field:
 					hex_width = int(event.text)
 					hex_height = int(hex_width * 0.8660254)
+			if event.type == pygame_gui.UI_BUTTON_PRESSED:
+				if event.ui_element == showgrid_button:
+					if show_grid:
+						show_grid = False
+					else:
+						show_grid = True
+				if event.ui_element == shownumbers_button:
+					if show_numbers:
+						show_numbers = False
+					else:
+						show_numbers = True
 					
 			manager.process_events(event)
 		manager.update(time_delta)
@@ -230,8 +251,8 @@ def main():
 												(x_offset + 3*hex_width/4,y_offset),
 												(x_offset + hex_width/4,y_offset)]
 											,0)
-			#draw hex numbers for debugging:
-			#screen.blit(font.render(str(k), True, 'White'), (x_offset+hex_width/2-5, y_offset+hex_height/2-5))
+			if show_numbers:
+				screen.blit(font.render(str(k), True, 'White'), (x_offset+hex_width/2-10, y_offset+hex_height/2-10))
 			#compute next iteration
 			neighbor_count = 0
 			for offset in pos[3]:
@@ -253,16 +274,17 @@ def main():
 				else:
 					hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
 		#overlay grid
-		for k,pos in enumerate(hexagons):
-			x_offset = pos[0].x
-			y_offset = pos[0].y
-			pygame.draw.polygon(screen,'White',[(x_offset,y_offset + hex_height/2),
-												(x_offset + hex_width/4,y_offset + hex_height),
-												(x_offset + 3*hex_width/4,y_offset + hex_height),
-												(x_offset + hex_width,y_offset + hex_height/2),
-												(x_offset + 3*hex_width/4,y_offset),
-												(x_offset + hex_width/4,y_offset)]
-											,1)
+		if show_grid:
+			for k,pos in enumerate(hexagons):
+				x_offset = pos[0].x
+				y_offset = pos[0].y
+				pygame.draw.polygon(screen,'White',[(x_offset,y_offset + hex_height/2),
+													(x_offset + hex_width/4,y_offset + hex_height),
+													(x_offset + 3*hex_width/4,y_offset + hex_height),
+													(x_offset + hex_width,y_offset + hex_height/2),
+													(x_offset + 3*hex_width/4,y_offset),
+													(x_offset + hex_width/4,y_offset)]
+												,1)
 		manager.draw_ui(screen)
 		pygame.display.update()
 	main()
