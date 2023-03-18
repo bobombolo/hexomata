@@ -124,15 +124,15 @@ def main():
 			row = int(k/grid_width)
 			if row%2:
 				neighborhood_index_offsets = [-grid_width,
-											-grid_width+1,
-											grid_width+1,
+											-grid_width-1,
+											grid_width-1,
 											grid_width,
 											grid_width*2,
 											-grid_width*2]
 			else:
 				neighborhood_index_offsets = [-grid_width,
-											-grid_width-1,
-											grid_width-1,
+											-grid_width+1,
+											grid_width+1,
 											grid_width,
 											grid_width*2,
 											-grid_width*2]
