@@ -11,7 +11,7 @@ pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height))
 fps = 60
 ruleset = '23/2'
-
+hex_width = 50
 def explode_rules(ruleset):
 	survival = []
 	birth = []
@@ -25,18 +25,34 @@ def explode_rules(ruleset):
 def main():
 	global ruleset
 	global fps
+	global hex_width
 	background = pygame.Surface((width, height))
 	background.fill((0,0,0))
 	manager = pygame_gui.UIManager((width, height))
-	ruleset_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 0), (100, 50)),
+	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((-20,10),(100,20)),
+														manager=manager,
+														text='Ruleset')
+	ruleset_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 30), (100, 30)),
 														manager=manager,
 														initial_text=ruleset)
-	fps_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 60), (100, 50)),
+	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((-35,60),(100,20)),
+														manager=manager,
+														text='FPS')
+	fps_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 80), (100, 30)),
 														manager=manager,
 														initial_text=str(fps))
+	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((-30,110),(140,20)),
+														manager=manager,
+														text='Tile Width')
+	hexwidth_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 130), (100, 30)),
+														manager=manager,
+														initial_text=str(hex_width))
+	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((width/2-100,height-30),(200,20)),
+														manager=manager,
+														text='SPACE to reset')
 	clock = pygame.time.Clock()
 	is_running = True
-	hex_width = 20
+	
 	hex_radius = hex_width / 2
 	hex_height = int(hex_width * 0.8660254)
 	hexagon_poss = []
@@ -74,9 +90,13 @@ def main():
 					ruleset = event.text
 				if event.ui_element == fps_field:
 					fps = int(event.text)
+				if event.ui_element == hexwidth_field:
+					hex_width = int(event.text)
+					hex_height = int(hex_width * 0.8660254)
+					
 			manager.process_events(event)
 		manager.update(time_delta)
-		#screen.blit(background, (0, 0))
+		screen.blit(background, (0, 0))
 		for k,pos in enumerate(hexagon_poss):
 			x_offset = pos[0].x
 			y_offset = pos[0].y
@@ -106,11 +126,9 @@ def main():
 											grid_width*2,
 											-grid_width*2]
 			
+			#print(neighborhood_index_offsets)
 			for offset in neighborhood_index_offsets:
-				collision = False
 				if k+offset > 0 and k+offset < grid_width*grid_height:
-					collision = pos[0].colliderect(hexagon_poss[k+offset][0])
-				if collision:
 					if hexagon_poss[k+offset][1]:
 						neighbor_count += 1
 			survival, birth = explode_rules(ruleset)
