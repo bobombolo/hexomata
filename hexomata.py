@@ -58,7 +58,9 @@ def main():
 	hex_height = int(hex_width * 0.8660254)
 	hexagon_poss = []
 	grid_width = int(width/hex_width/2)
+	if grid_width%2: grid_width -= 1
 	grid_height = int(height/hex_radius)
+	if grid_height%2: grid_height -= 1 #we only want an even number of rows
 	hex_counter = 0
 	for y in range(grid_height):
 		y_offset = hex_height * y / 2 + 20
@@ -76,7 +78,84 @@ def main():
 										(x_offset + 3*hex_width/4,y_offset),
 										(x_offset + hex_width/4,y_offset)]
 									,1)
-			hexagon_poss.insert(hex_counter,[hexagon,random.randint(0,1),0])
+			hex_neighbor_offsets = []
+			#calculate neighbor offsets once and store in hexagon_poss
+			if y == 0: #top row
+				if x == 0: #top left corner
+					hex_neightbor_offsets = [grid_width,
+												grid_width+1,
+												grid_width*grid_height-grid_width,
+												grid_width*grid_height-grid_width+1,
+												grid_width*2,
+												grid_width*grid_height-grid_width*2]
+				elif x == grid_width-1: #top right corner
+					hex_neighbor_offsets = [grid_width,
+												1,
+												grid_width*grid_height-grid_width,
+												grid_width*grid_height-grid_width*2+1,
+												grid_width*2,
+												grid_width*grid_height-grid_width*2]
+				else:#rest of top row
+					hex_neighbor_offsets = [grid_width,
+												grid_width+1,
+												grid_width*grid_height-grid_width,
+												grid_width*grid_height-grid_width+1,
+												grid_width*2,
+												grid_width*grid_height-grid_width*2]
+			elif y == grid_height-1: #bottom row
+				if x == 0: #bottom left corner
+					hex_neightbor_offsets = [-1,
+												-grid_width,
+												-grid_width*grid_height+grid_width-1,
+												-grid_width*grid_height+grid_width,
+												-grid_width*2,
+												-grid_width*grid_height+grid_width*2]
+				elif x == grid_width-1: #bottom right corner
+					hex_neighbor_offsets = [-grid_width-1,
+												-grid_width,
+												-grid_width*grid_height+grid_width-1,
+												-grid_width*grid_height+grid_width,
+												-grid_width*2,
+												-grid_width*grid_height+grid_width*2]
+				else: #the rest of the bottom row
+					hex_neighbor_offsets = [-grid_width-1,
+												-grid_width,
+												-grid_width*grid_height+grid_width-1,
+												-grid_width*grid_height+grid_width,
+												-grid_width*2,
+												-grid_width*grid_height+grid_width*2]
+			else: #interior rows
+				if y%2 and x == 0: #leftmost tile
+					hex_neightbor_offsets = [-1,
+												grid_width*2-1,
+												-grid_width,
+												grid_width,
+												-grid_width*2,
+												grid_width*2]
+				elif not y%2 and x == grid_width-1: #rightmost tile
+					hex_neighbor_offsets = [1,
+												-grid_width*2+1,
+												-grid_width,
+												grid_width,
+												-grid_width*2,
+												grid_width*2]
+			if hex_neighbor_offsets == []:
+				if y%2:
+					hex_neighbor_offsets = [-grid_width,
+											-grid_width-1,
+											grid_width-1,
+											grid_width,
+											grid_width*2,
+											-grid_width*2]
+				else:
+					hex_neighbor_offsets = [-grid_width,
+											-grid_width+1,
+											grid_width+1,
+											grid_width,
+											grid_width*2,
+											-grid_width*2]
+			#hexagon_poss index-> 0=rect, 1=state, 2=neighbor_count, 3=neighbor_offsets
+			hexagon_poss.insert(hex_counter,[hexagon,random.randint(0,1),0,hex_neighbor_offsets])
 			hex_counter += 1
 	while is_running:
 		time_delta = clock.tick(fps)/1000.0
@@ -98,7 +177,8 @@ def main():
 			manager.process_events(event)
 		manager.update(time_delta)
 		screen.blit(background, (0, 0))
-		
+		#draw last iteration
+		survival, birth = explode_rules(ruleset)
 		for k,pos in enumerate(hexagon_poss):
 			x_offset = pos[0].x
 			y_offset = pos[0].y
@@ -119,42 +199,25 @@ def main():
 												(x_offset + hex_width/4,y_offset)]
 											,0)
 			#screen.blit(font.render(str(k), True, 'White'), (x_offset+hex_width/2-5, y_offset+hex_height/2-5))
-			
-			#determine if k is in an odd or even row because the offsets change in a hex grid
-			row = int(k/grid_width)
-			if row%2:
-				neighborhood_index_offsets = [-grid_width,
-											-grid_width-1,
-											grid_width-1,
-											grid_width,
-											grid_width*2,
-											-grid_width*2]
-			else:
-				neighborhood_index_offsets = [-grid_width,
-											-grid_width+1,
-											grid_width+1,
-											grid_width,
-											grid_width*2,
-											-grid_width*2]
-			neighbors = []
+			#compute next iteration
 			neighbor_count = 0
-			for offset in neighborhood_index_offsets:
-				if k+offset > 0 and k+offset < grid_width*grid_height:
+			for offset in pos[3]:
+				if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
 					if hexagon_poss[k+offset][1]:
 						neighbor_count += 1
 			survival, birth = explode_rules(ruleset)
 			if pos[1]:
 				#survival rules
 				if neighbor_count in survival:
-					hexagon_poss[k] = [pos[0],1,neighbor_count]
+					hexagon_poss[k] = [pos[0],1,neighbor_count,pos[3]]
 				else:
-					hexagon_poss[k] = [pos[0],0,neighbor_count]
+					hexagon_poss[k] = [pos[0],0,neighbor_count,pos[3]]
 			if not pos[1]:
 				#birth rules
 				if neighbor_count in birth:
-					hexagon_poss[k] = [pos[0],1,neighbor_count]
+					hexagon_poss[k] = [pos[0],1,neighbor_count,pos[3]]
 				else:
-					hexagon_poss[k] = [pos[0],0,neighbor_count]
+					hexagon_poss[k] = [pos[0],0,neighbor_count,pos[3]]
 		manager.draw_ui(screen)
 		pygame.display.update()
 	main()
