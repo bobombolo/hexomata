@@ -9,6 +9,7 @@ width = 800
 height = 600
 pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height))
+fps = 60
 ruleset = '23/2'
 
 def explode_rules(ruleset):
@@ -23,12 +24,16 @@ def explode_rules(ruleset):
 	
 def main():
 	global ruleset
+	global fps
 	background = pygame.Surface((width, height))
 	background.fill((0,0,0))
 	manager = pygame_gui.UIManager((width, height))
 	ruleset_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 0), (100, 50)),
 														manager=manager,
 														initial_text=ruleset)
+	fps_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 60), (100, 50)),
+														manager=manager,
+														initial_text=str(fps))
 	clock = pygame.time.Clock()
 	is_running = True
 	hex_width = 20
@@ -57,7 +62,7 @@ def main():
 			hexagon_poss.insert(hex_counter,[hexagon,random.randint(0,1),0])
 			hex_counter += 1
 	while is_running:
-		time_delta = clock.tick(60)/1000.0
+		time_delta = clock.tick(fps)/1000.0
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				is_running = False
@@ -67,6 +72,8 @@ def main():
 			if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
 				if event.ui_element == ruleset_field:
 					ruleset = event.text
+				if event.ui_element == fps_field:
+					fps = int(event.text)
 			manager.process_events(event)
 		manager.update(time_delta)
 		#screen.blit(background, (0, 0))
