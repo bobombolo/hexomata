@@ -1,3 +1,4 @@
 # hexomata
 a hexagonal cellular automata in pygame
-![Screenshot 2023-03-17 15 43 13](https://user-images.githubusercontent.com/25610408/226100712-dd06dae9-5e07-4904-a39c-a4c789606866.png)
+control ruleset, FPS and cell size. space to reset with random field.
+![Screenshot 2023-03-18 08 11 52](https://user-images.githubusercontent.com/25610408/226105332-e57653f8-cc3c-44f5-97c6-9ed11d9054fd.png)
