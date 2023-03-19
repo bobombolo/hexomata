@@ -11,8 +11,15 @@ pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height))
 font = pygame.font.SysFont(None, 24)
 sound = True
-grow_sound = pygame.mixer.Sound('click.wav')
-tile_sound = pygame.mixer.Sound('clack.wav')
+#grow_sound = pygame.mixer.Sound('sounds/click.wav')
+tile_sound = pygame.mixer.Sound('sounds/clack.wav')
+yellow_sound = pygame.mixer.Sound('sounds/piano.11.ogg')
+orange_sound = pygame.mixer.Sound('sounds/piano.9.ogg')
+red_sound = pygame.mixer.Sound('sounds/piano.7.ogg')
+magenta_sound = pygame.mixer.Sound('sounds/piano.6.ogg')
+purple_sound = pygame.mixer.Sound('sounds/piano.5.ogg')
+blue_sound = pygame.mixer.Sound('sounds/piano.3.ogg')
+green_sound = pygame.mixer.Sound('sounds/piano.1.ogg')
 fps = 5
 ruleset = '23/2'
 hex_width = 50
@@ -256,6 +263,7 @@ def main():
 				if event.ui_element == hexwidth_field:
 					hex_width = int(event.text)
 					hex_height = int(hex_width * 0.8660254)
+					if is_running: is_running = False
 			if event.type == pygame_gui.UI_BUTTON_PRESSED:
 				if event.ui_element == showgrid_button:
 					if show_grid:
@@ -300,13 +308,13 @@ def main():
 			y_offset = pos[0].y
 			color='Black'
 			if pos[1]:
-				if pos[2] == 0: color='White'
-				elif pos[2] == 1: color='Yellow'
-				elif pos[2] == 2: color='Green'
-				elif pos[2] == 3: color='Blue'
+				if pos[2] == 0: color='Yellow'
+				elif pos[2] == 1: color='Orange'
+				elif pos[2] == 2: color='Red'
+				elif pos[2] == 3: color='Magenta'
 				elif pos[2] == 4: color='Purple'
-				elif pos[2] == 5: color='Magenta'
-				elif pos[2] == 6: color='Red'
+				elif pos[2] == 5: color='Blue'
+				elif pos[2] == 6: color='Green'
 			pygame.draw.polygon(screen,color,[(x_offset,y_offset + hex_height/2),
 												(x_offset + hex_width/4,y_offset + hex_height),
 												(x_offset + 3*hex_width/4,y_offset + hex_height),
@@ -354,8 +362,39 @@ def main():
 													(x_offset + 3*hex_width/4,y_offset),
 													(x_offset + hex_width/4,y_offset)]
 												,1)
+		zeroes, ones, twos, threes, fours, fives, sixes = 0,0,0,0,0,0,0
+		for pos in hexagons:
+			if pos[1]:
+				if pos[2] == 0: zeroes += 1
+				if pos[2] == 1: ones += 1
+				if pos[2] == 2: twos += 1
+				if pos[2] == 3: threes += 1
+				if pos[2] == 4: fours += 1
+				if pos[2] == 5: fives += 1
+				if pos[2] == 6: sixes += 1
 		manager.draw_ui(screen)
-		if not paused and not dead and sound: grow_sound.play()
+		if not paused and not dead and sound:
+			if zeroes:
+				yellow_sound.set_volume(zeroes/grid_total)
+				yellow_sound.play()
+			if ones:
+				orange_sound.set_volume(ones/grid_total)
+				orange_sound.play()
+			if twos:
+				red_sound.set_volume(twos/grid_total)
+				red_sound.play()
+			if threes:
+				magenta_sound.set_volume(threes/grid_total)
+				magenta_sound.play()
+			if fours:
+				purple_sound.set_volume(fours/grid_total)
+				purple_sound.play()
+			if fives:
+				blue_sound.set_volume(fives/grid_total)
+				blue_sound.play()
+			if sixes:
+				green_sound.set_volume(sixes/grid_total)
+				green_sound.play()
 		pygame.display.update()
 		if render:
 			pygame.image.save(screen,'render/hexomata'+str(frame_num)+'.png')
