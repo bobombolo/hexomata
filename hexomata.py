@@ -281,8 +281,8 @@ def main():
 		if paused:
 			screen.blit(font.render('--PAUSED--',0,'White'),(0,height-30))
 		#draw last iteration
-		
-		for k,pos in enumerate(hexagons):
+		old_hexagons = hexagons.copy()
+		for k,pos in enumerate(old_hexagons):
 			x_offset = pos[0].x
 			y_offset = pos[0].y
 			color='Black'
@@ -309,7 +309,7 @@ def main():
 				survival, birth = explode_rules(ruleset)
 				for offset in pos[3]:
 					#if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
-					if hexagons[k+offset][1]:
+					if old_hexagons[k+offset][1]:
 						neighbor_count += 1
 					#else: print('out of bounds: ',k,'+',offset)
 				if pos[1]:
