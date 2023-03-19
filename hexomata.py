@@ -64,9 +64,9 @@ def main():
 	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 300), (100, 30)),
 														text='Render',
 														manager=manager)
-	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((width/2-100,height-30),(200,20)),
+	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((width/2-250,height-30),(500,20)),
 														manager=manager,
-														text='SPACE to reset')
+														text='SPACE to reset -- Click Mouse to activate / deactivate a tile')
 	clock = pygame.time.Clock()
 	is_running = True
 	
@@ -224,6 +224,13 @@ def main():
 				quit()
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 				if is_running: is_running = False
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				for k,pos in enumerate(hexagons):
+					if pos[0].collidepoint(event.pos): 
+						if pos[1]:
+							hexagons[k] = pos[0],0,pos[2],pos[3]
+						else:
+							hexagons[k] = pos[0],1,pos[2],pos[3]
 			if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
 				if event.ui_element == ruleset_field:
 					ruleset = event.text
