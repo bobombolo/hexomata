@@ -15,6 +15,7 @@ ruleset = '23/2'
 hex_width = 50
 show_grid = True
 show_numbers = False
+render = False
 def explode_rules(ruleset):
 	survival = []
 	birth = []
@@ -31,6 +32,7 @@ def main():
 	global hex_width
 	global show_grid
 	global show_numbers
+	global render
 	background = pygame.Surface((width, height))
 	background.fill((0,0,0))
 	manager = pygame_gui.UIManager((width, height))
@@ -57,6 +59,9 @@ def main():
 														manager=manager)
 	shownumbers_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 190), (100, 30)),
 														text='Show Nums',
+														manager=manager)
+	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 300), (100, 30)),
+														text='Render',
 														manager=manager)
 	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((width/2-100,height-30),(200,20)),
 														manager=manager,
@@ -199,6 +204,7 @@ def main():
 			#hexagons index-> 0=rect, 1=state, 2=neighbor_count, 3=neighbor_offsets
 			hexagons.insert(hex_counter,[hexagon,random.randint(0,1),0,hex_neighbor_offsets])
 			hex_counter += 1
+	frame_num = 0
 	while is_running:
 		time_delta = clock.tick(fps)/1000.0
 		for event in pygame.event.get():
@@ -226,6 +232,12 @@ def main():
 						show_numbers = False
 					else:
 						show_numbers = True
+				if event.ui_element == render_button:
+					if render:
+						render = False
+					else:
+						render = True
+						frame_num = 0
 					
 			manager.process_events(event)
 		manager.update(time_delta)
@@ -287,6 +299,9 @@ def main():
 												,1)
 		manager.draw_ui(screen)
 		pygame.display.update()
+		if render:
+			pygame.image.save(screen,'render/hexomata'+str(frame_num)+'.png')
+		frame_num += 1
 	main()
 if __name__ == "__main__":
     main()
