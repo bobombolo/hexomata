@@ -23,7 +23,7 @@ green_sound = pygame.mixer.Sound('sounds/piano.1.ogg')
 fps = 5
 ruleset = '23/2'
 hex_width = 50
-show_grid = True
+show_grid = False
 show_numbers = False
 render = False
 paused = False
@@ -362,6 +362,8 @@ def main():
 													(x_offset + 3*hex_width/4,y_offset),
 													(x_offset + hex_width/4,y_offset)]
 												,1)
+		manager.draw_ui(screen)
+		#calculate sound volumes and play sounds
 		zeroes, ones, twos, threes, fours, fives, sixes = 0,0,0,0,0,0,0
 		for pos in hexagons:
 			if pos[1]:
@@ -372,7 +374,6 @@ def main():
 				if pos[2] == 4: fours += 1
 				if pos[2] == 5: fives += 1
 				if pos[2] == 6: sixes += 1
-		manager.draw_ui(screen)
 		if not paused and not dead and sound:
 			if zeroes:
 				yellow_sound.set_volume(zeroes/grid_total)
@@ -395,10 +396,11 @@ def main():
 			if sixes:
 				green_sound.set_volume(sixes/grid_total)
 				green_sound.play()
-		pygame.display.update()
-		if render:
-			pygame.image.save(screen,'render/hexomata'+str(frame_num)+'.png')
-		frame_num += 1
+		if is_running:
+			pygame.display.update()
+			if render:
+				pygame.image.save(screen,'render/hexomata'+str(frame_num)+'.png')
+			frame_num += 1
 	main()
 if __name__ == "__main__":
     main()
