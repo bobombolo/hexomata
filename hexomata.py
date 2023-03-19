@@ -122,7 +122,7 @@ def main():
 			elif y == 1: #second row
 				if x == 0:
 					hex_neighbor_offsets = [-1,
-												grid_width-1,
+												grid_width*2-1,
 												-grid_width,
 												grid_width,
 												grid_total-grid_width*2,
@@ -172,14 +172,14 @@ def main():
 												-grid_width*2,
 												-grid_total+grid_width*2]
 			else: #interior rows alternating left and rightmost tiles
-				if y%2 and x == 0: #leftmost tile on even rows
-					hex_neightbor_offsets = [-1,
+				if y%2 and x == 0: #leftmost tile on odd rows
+					hex_neighbor_offsets = [-1,
 												grid_width*2-1,
 												-grid_width,
 												grid_width,
 												-grid_width*2,
 												grid_width*2]
-				elif not y%2 and x == grid_width-1: #rightmost tile on odd rows
+				elif not y%2 and x == grid_width-1: #rightmost tile on even rows
 					hex_neighbor_offsets = [1,
 												-grid_width*2+1,
 												-grid_width,
@@ -188,14 +188,14 @@ def main():
 												grid_width*2]
 			#any remaining tiles are interior tiles:
 			if hex_neighbor_offsets == []:
-				if y%2:
+				if y%2: #odd numbered rows
 					hex_neighbor_offsets = [-grid_width,
 											-grid_width-1,
 											grid_width-1,
 											grid_width,
 											grid_width*2,
 											-grid_width*2]
-				else:
+				else: #even numbered rows
 					hex_neighbor_offsets = [-grid_width,
 											-grid_width+1,
 											grid_width+1,
