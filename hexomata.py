@@ -33,6 +33,7 @@ def main():
 	global show_grid
 	global show_numbers
 	global render
+	survival, birth = explode_rules(ruleset)
 	background = pygame.Surface((width, height))
 	background.fill((0,0,0))
 	manager = pygame_gui.UIManager((width, height))
@@ -204,6 +205,16 @@ def main():
 			#hexagons index-> 0=rect, 1=state, 2=neighbor_count, 3=neighbor_offsets
 			hexagons.insert(hex_counter,[hexagon,random.randint(0,1),0,hex_neighbor_offsets])
 			hex_counter += 1
+	#Calculate and colorize the initial random field
+	for k,pos in enumerate(hexagons):
+		neighbor_count = 0
+		for offset in pos[3]:
+			#if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
+			if hexagons[k+offset][1]:
+				neighbor_count += 1
+			#else: print('out of bounds: ',k,'+',offset)
+		if pos[1]:
+			hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
 	frame_num = 0
 	while is_running:
 		time_delta = clock.tick(fps)/1000.0
@@ -243,7 +254,6 @@ def main():
 		manager.update(time_delta)
 		screen.blit(background, (0, 0))
 		#draw last iteration
-		survival, birth = explode_rules(ruleset)
 		for k,pos in enumerate(hexagons):
 			x_offset = pos[0].x
 			y_offset = pos[0].y
@@ -272,7 +282,6 @@ def main():
 				if hexagons[k+offset][1]:
 					neighbor_count += 1
 				#else: print('out of bounds: ',k,'+',offset)
-			survival, birth = explode_rules(ruleset)
 			if pos[1]:
 				#survival rules
 				if neighbor_count in survival:
