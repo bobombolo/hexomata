@@ -10,7 +10,10 @@ height = 600
 pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height))
 font = pygame.font.SysFont(None, 24)
-fps = 60
+sound = True
+grow_sound = pygame.mixer.Sound('click.wav')
+tile_sound = pygame.mixer.Sound('clack.wav')
+fps = 5
 ruleset = '23/2'
 hex_width = 50
 show_grid = True
@@ -35,7 +38,8 @@ def main():
 	global show_numbers
 	global render
 	global paused
-	survival, birth = explode_rules(ruleset)
+	global sound
+	
 	background = pygame.Surface((width, height))
 	background.fill((0,0,0))
 	manager = pygame_gui.UIManager((width, height))
@@ -69,7 +73,10 @@ def main():
 	blank_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 250), (100, 30)),
 														text='Blank',
 														manager=manager)
-	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 300), (100, 30)),
+	sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 280), (100, 30)),
+														text='Sound',
+														manager=manager)
+	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 350), (100, 30)),
 														text='Render',
 														manager=manager)
 	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((width/2-250,height-30),(500,20)),
@@ -235,6 +242,8 @@ def main():
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				for k,pos in enumerate(hexagons):
 					if pos[0].collidepoint(event.pos): 
+						if sound:
+							tile_sound.play()
 						if pos[1]:
 							hexagons[k] = pos[0],0,pos[2],pos[3]
 						else:
@@ -274,7 +283,11 @@ def main():
 						paused = True
 					for k,pos in enumerate(hexagons):
 						hexagons[k] = [pos[0],0,0,pos[3]]
-					
+				if event.ui_element == sound_button:
+					if sound:
+						sound = False
+					else:
+						sound = True
 			manager.process_events(event)
 		manager.update(time_delta)
 		screen.blit(background, (0, 0))
@@ -324,6 +337,11 @@ def main():
 						hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
 					else:
 						hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
+		#detect a dead grid
+		dead = False
+		if old_hexagons == hexagons and not paused:
+			dead = True
+			screen.blit(font.render('--DEAD--',0,'White'),(15,height-60))
 		#overlay grid
 		if show_grid:
 			for k,pos in enumerate(hexagons):
@@ -337,6 +355,7 @@ def main():
 													(x_offset + hex_width/4,y_offset)]
 												,1)
 		manager.draw_ui(screen)
+		if not paused and not dead and sound: grow_sound.play()
 		pygame.display.update()
 		if render:
 			pygame.image.save(screen,'render/hexomata'+str(frame_num)+'.png')
