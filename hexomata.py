@@ -16,6 +16,7 @@ hex_width = 50
 show_grid = True
 show_numbers = False
 render = False
+paused = False
 def explode_rules(ruleset):
 	survival = []
 	birth = []
@@ -33,6 +34,7 @@ def main():
 	global show_grid
 	global show_numbers
 	global render
+	global paused
 	survival, birth = explode_rules(ruleset)
 	background = pygame.Surface((width, height))
 	background.fill((0,0,0))
@@ -60,6 +62,12 @@ def main():
 														manager=manager)
 	shownumbers_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 190), (100, 30)),
 														text='Show Nums',
+														manager=manager)
+	paused_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 220), (100, 30)),
+														text='Pause',
+														manager=manager)
+	blank_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 250), (100, 30)),
+														text='Blank',
 														manager=manager)
 	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 300), (100, 30)),
 														text='Render',
@@ -256,11 +264,24 @@ def main():
 					else:
 						render = True
 						frame_num = 0
+				if event.ui_element == paused_button:
+					if paused:
+						paused = False
+					else:
+						paused = True
+				if event.ui_element == blank_button:
+					if not paused:
+						paused = True
+					for k,pos in enumerate(hexagons):
+						hexagons[k] = [pos[0],0,0,pos[3]]
 					
 			manager.process_events(event)
 		manager.update(time_delta)
 		screen.blit(background, (0, 0))
+		if paused:
+			screen.blit(font.render('--PAUSED--',0,'White'),(0,height-30))
 		#draw last iteration
+		
 		for k,pos in enumerate(hexagons):
 			x_offset = pos[0].x
 			y_offset = pos[0].y
@@ -283,24 +304,26 @@ def main():
 			if show_numbers:
 				screen.blit(font.render(str(k), True, 'White'), (x_offset+hex_width/2-10, y_offset+hex_height/2-10))
 			#compute next iteration
-			neighbor_count = 0
-			for offset in pos[3]:
-				#if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
-				if hexagons[k+offset][1]:
-					neighbor_count += 1
-				#else: print('out of bounds: ',k,'+',offset)
-			if pos[1]:
-				#survival rules
-				if neighbor_count in survival:
-					hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
-				else:
-					hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
-			if not pos[1]:
-				#birth rules
-				if neighbor_count in birth:
-					hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
-				else:
-					hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
+			if not paused:
+				neighbor_count = 0
+				survival, birth = explode_rules(ruleset)
+				for offset in pos[3]:
+					#if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
+					if hexagons[k+offset][1]:
+						neighbor_count += 1
+					#else: print('out of bounds: ',k,'+',offset)
+				if pos[1]:
+					#survival rules
+					if neighbor_count in survival:
+						hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
+					else:
+						hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
+				if not pos[1]:
+					#birth rules
+					if neighbor_count in birth:
+						hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
+					else:
+						hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
 		#overlay grid
 		if show_grid:
 			for k,pos in enumerate(hexagons):
