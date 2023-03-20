@@ -98,9 +98,9 @@ def main():
 	hex_radius = hex_width / 2
 	hex_height = int(hex_width * 0.8660254)
 	hexagons = []
-	grid_width = int(width/hex_width*.6)
+	grid_width = int((width-hex_width*2)/(hex_width+hex_width/2))
 	if grid_width%2: grid_width -= 1 #we only want an even number of columns
-	grid_height = int(height/hex_radius*1.1)
+	grid_height = int((height-hex_height)/(hex_height/2))
 	if grid_height%2: grid_height -= 1 #we only want an even number of rows
 	grid_total = grid_width*grid_height
 	hex_counter = 0
