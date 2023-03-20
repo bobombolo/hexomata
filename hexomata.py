@@ -8,7 +8,7 @@ pygame.init()
 width = 1024
 height = 600
 pygame.display.set_caption('Hexomata')
-screen = pygame.display.set_mode((width, height))
+screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 font = pygame.font.SysFont(None, 24)
 sound = True
 #grow_sound = pygame.mixer.Sound('sounds/click.wav')
@@ -38,6 +38,9 @@ def explode_rules(ruleset):
 	return survival, birth
 	
 def main():
+	global screen
+	global width
+	global height
 	global ruleset
 	global fps
 	global hex_width
@@ -95,20 +98,20 @@ def main():
 	hex_radius = hex_width / 2
 	hex_height = int(hex_width * 0.8660254)
 	hexagons = []
-	grid_width = int(width/hex_width/2)
+	grid_width = int(width/hex_width*.6)
 	if grid_width%2: grid_width -= 1 #we only want an even number of columns
-	grid_height = int(height/hex_radius)
+	grid_height = int(height/hex_radius*1.1)
 	if grid_height%2: grid_height -= 1 #we only want an even number of rows
 	grid_total = grid_width*grid_height
 	hex_counter = 0
 	for y in range(grid_height):
-		y_offset = hex_height * y / 2 + 20
+		y_offset = hex_height * y / 2 + 10
 		for x in range(grid_width):
 			
 			if not y%2:
-				x_offset = (hex_width + hex_width / 2 ) * x +150
+				x_offset = (hex_width + hex_width / 2 ) * x +140
 			else:
-				x_offset = (hex_width + hex_width / 2 ) * x - 3 * hex_width / 4 +150
+				x_offset = (hex_width + hex_width / 2 ) * x - 3 * hex_width / 4 +140
 			
 			hexagon = pygame.draw.polygon(screen,'Black',[(x_offset,y_offset + hex_height/2),
 										(x_offset + hex_width/4,y_offset + hex_height),
@@ -244,6 +247,11 @@ def main():
 			if event.type == pygame.QUIT:
 				is_running = False
 				quit()
+			if event.type == pygame.WINDOWRESIZED:
+				#screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+				width = screen.get_width()
+				height = screen.get_height()
+				is_running = False
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 				if is_running: is_running = False
 			if event.type == pygame.MOUSEBUTTONDOWN:
@@ -376,24 +384,31 @@ def main():
 				if pos[2] == 6: sixes += 1
 		if not paused and not dead and sound:
 			if zeroes:
+				yellow_sound.stop()
 				yellow_sound.set_volume(zeroes/grid_total)
 				yellow_sound.play()
 			if ones:
+				orange_sound.stop()
 				orange_sound.set_volume(ones/grid_total)
 				orange_sound.play()
 			if twos:
+				red_sound.stop()
 				red_sound.set_volume(twos/grid_total)
 				red_sound.play()
 			if threes:
+				magenta_sound.stop()
 				magenta_sound.set_volume(threes/grid_total)
 				magenta_sound.play()
 			if fours:
+				purple_sound.stop()
 				purple_sound.set_volume(fours/grid_total)
 				purple_sound.play()
 			if fives:
+				blue_sound.stop()
 				blue_sound.set_volume(fives/grid_total)
 				blue_sound.play()
 			if sixes:
+				green_sound.stop()
 				green_sound.set_volume(sixes/grid_total)
 				green_sound.play()
 		if is_running:
