@@ -2,7 +2,6 @@
 import pygame
 import pygame_gui
 import random
-import math
 
 pygame.init()
 width = 1024
@@ -11,15 +10,16 @@ pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 font = pygame.font.SysFont(None, 24)
 sound = True
-#grow_sound = pygame.mixer.Sound('sounds/click.wav')
-tile_sound = pygame.mixer.Sound('sounds/clack.wav')
-yellow_sound = pygame.mixer.Sound('sounds/piano.11.ogg')
-orange_sound = pygame.mixer.Sound('sounds/piano.9.ogg')
-red_sound = pygame.mixer.Sound('sounds/piano.7.ogg')
-magenta_sound = pygame.mixer.Sound('sounds/piano.6.ogg')
-purple_sound = pygame.mixer.Sound('sounds/piano.5.ogg')
-blue_sound = pygame.mixer.Sound('sounds/piano.3.ogg')
-green_sound = pygame.mixer.Sound('sounds/piano.1.ogg')
+if sound:
+	#grow_sound = pygame.mixer.Sound('sounds/click.wav')
+	tile_sound = pygame.mixer.Sound('sounds/clack.wav')
+	yellow_sound = pygame.mixer.Sound('sounds/piano.11.ogg')
+	orange_sound = pygame.mixer.Sound('sounds/piano.9.ogg')
+	red_sound = pygame.mixer.Sound('sounds/piano.7.ogg')
+	magenta_sound = pygame.mixer.Sound('sounds/piano.6.ogg')
+	purple_sound = pygame.mixer.Sound('sounds/piano.5.ogg')
+	blue_sound = pygame.mixer.Sound('sounds/piano.3.ogg')
+	green_sound = pygame.mixer.Sound('sounds/piano.1.ogg')
 fps = 5
 ruleset = '23/2'
 hex_width = 50
