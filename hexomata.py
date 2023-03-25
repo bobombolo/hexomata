@@ -308,6 +308,7 @@ def main():
 				if event.ui_element == blank_button:
 					if not paused:
 						paused = True
+						paused_button.select()
 					for k,pos in enumerate(hexagons):
 						hexagons[k] = [pos[0],0,0,pos[3]]
 				if event.ui_element == sound_button:
