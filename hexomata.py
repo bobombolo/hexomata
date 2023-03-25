@@ -10,16 +10,15 @@ pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 font = pygame.font.SysFont(None, 24)
 sound = True
-if sound:
-	#grow_sound = pygame.mixer.Sound('sounds/click.wav')
-	tile_sound = pygame.mixer.Sound('sounds/clack.wav')
-	yellow_sound = pygame.mixer.Sound('sounds/piano.11.ogg')
-	orange_sound = pygame.mixer.Sound('sounds/piano.9.ogg')
-	red_sound = pygame.mixer.Sound('sounds/piano.7.ogg')
-	magenta_sound = pygame.mixer.Sound('sounds/piano.6.ogg')
-	purple_sound = pygame.mixer.Sound('sounds/piano.5.ogg')
-	blue_sound = pygame.mixer.Sound('sounds/piano.3.ogg')
-	green_sound = pygame.mixer.Sound('sounds/piano.1.ogg')
+#grow_sound = pygame.mixer.Sound('sounds/click.wav')
+tile_sound = pygame.mixer.Sound('sounds/clack.wav')
+yellow_sound = pygame.mixer.Sound('sounds/piano.11.ogg')
+orange_sound = pygame.mixer.Sound('sounds/piano.9.ogg')
+red_sound = pygame.mixer.Sound('sounds/piano.7.ogg')
+magenta_sound = pygame.mixer.Sound('sounds/piano.6.ogg')
+purple_sound = pygame.mixer.Sound('sounds/piano.5.ogg')
+blue_sound = pygame.mixer.Sound('sounds/piano.3.ogg')
+green_sound = pygame.mixer.Sound('sounds/piano.1.ogg')
 fps = 5
 ruleset = '23/2'
 hex_width = 50
@@ -86,6 +85,8 @@ def main():
 	sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 280), (100, 30)),
 														text='Sound',
 														manager=manager)
+	if sound:
+		sound_button.select()
 	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 350), (100, 30)),
 														text='Render',
 														manager=manager)
@@ -240,6 +241,8 @@ def main():
 			#else: print('out of bounds: ',k,'+',offset)
 		if pos[1]:
 			hexagons[k] = [pos[0],1,neighbor_count,pos[3]]
+		else:
+			hexagons[k] = [pos[0],0,neighbor_count,pos[3]]
 	frame_num = 0
 	while is_running:
 		time_delta = clock.tick(fps)/1000.0
@@ -276,24 +279,32 @@ def main():
 				if event.ui_element == showgrid_button:
 					if show_grid:
 						show_grid = False
+						showgrid_button.unselect()
 					else:
 						show_grid = True
+						showgrid_button.select()
 				if event.ui_element == shownumbers_button:
 					if show_numbers:
 						show_numbers = False
+						shownumbers_button.unselect()
 					else:
 						show_numbers = True
+						shownumbers_button.select()
 				if event.ui_element == render_button:
 					if render:
 						render = False
+						render_button.unselect()
 					else:
 						render = True
+						render_button.select()
 						frame_num = 0
 				if event.ui_element == paused_button:
 					if paused:
+						paused_button.unselect()
 						paused = False
 					else:
 						paused = True
+						paused_button.select()
 				if event.ui_element == blank_button:
 					if not paused:
 						paused = True
@@ -302,8 +313,10 @@ def main():
 				if event.ui_element == sound_button:
 					if sound:
 						sound = False
+						sound_button.unselect()
 					else:
 						sound = True
+						sound_button.select()
 			manager.process_events(event)
 		manager.update(time_delta)
 		screen.blit(background, (0, 0))
@@ -384,9 +397,9 @@ def main():
 				if pos[2] == 6: sixes += 1
 		if not paused and not dead and sound:
 			if zeroes:
-				yellow_sound.stop()
+				player.note_off(-2,127,1)
 				yellow_sound.set_volume(zeroes/grid_total)
-				yellow_sound.play()
+				player.note_on(-2,127,1)
 			if ones:
 				orange_sound.stop()
 				orange_sound.set_volume(ones/grid_total)
