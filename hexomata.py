@@ -165,7 +165,7 @@ def main():
 					hex_neighbor_offsets = [-grid_width,
 												grid_width,
 												-grid_width*2+1,
-												+1,
+												1,
 												-grid_width*2,
 												-grid_total+grid_width*2]
 				else:
@@ -398,9 +398,9 @@ def main():
 				if pos[2] == 6: sixes += 1
 		if not paused and not dead and sound:
 			if zeroes:
-				player.note_off(-2,127,1)
+				yellow_sound.stop()
 				yellow_sound.set_volume(zeroes/grid_total)
-				player.note_on(-2,127,1)
+				yellow_sound.play()
 			if ones:
 				orange_sound.stop()
 				orange_sound.set_volume(ones/grid_total)
