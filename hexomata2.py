@@ -275,6 +275,7 @@ def main():
 	hex_radius = hex_width / 2
 	hex_height = int(hex_width * 0.8660254)
 	hexagons = []
+	animated_hexagons = [] #highlights neighbors when tile is clicked
 	grid_width = int((width-hex_width*2)/(hex_width+hex_width/2))
 	if grid_width%2: grid_width -= 1 #we only want an even number of columns
 	grid_height = int((height-hex_height)/(hex_height/2))
@@ -422,7 +423,7 @@ def main():
 											grid_width*4,
 											-1,
 											1,
-											grid_total-grid_width-1,
+											grid_total-grid_width*2-1,
 											grid_width*2-1,
 											grid_total-grid_width*2+1,
 											grid_width*2+1,
@@ -846,6 +847,11 @@ def main():
 							hexagons[k] = pos[0],0,pos[2],pos[3],pos[4]
 						else:
 							hexagons[k] = pos[0],1,pos[2],pos[3],pos[4]
+						#breifly highlight the neighborhood of the selected tile
+						for offset in pos[3]+pos[4]:
+							x_offset = hexagons[k+offset][0].x
+							y_offset = hexagons[k+offset][0].y
+							animated_hexagons.append([x_offset,y_offset])
 			if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
 				if event.ui_element == fps_field:
 					fps = int(event.text)
@@ -1221,6 +1227,18 @@ def main():
 						hexagons[k] = [pos[0],1,neighbor_count,pos[3],pos[4]]
 					else:
 						hexagons[k] = [pos[0],0,neighbor_count,pos[3],pos[4]]
+		if animated_hexagons:
+			for k, hexagon in enumerate(animated_hexagons):
+				x_offset = hexagon[0]
+				y_offset = hexagon[1]
+				pygame.draw.polygon(screen,'White',[(x_offset,y_offset + hex_height/2),
+											(x_offset + hex_width/4,y_offset + hex_height),
+											(x_offset + 3*hex_width/4,y_offset + hex_height),
+											(x_offset + hex_width,y_offset + hex_height/2),
+											(x_offset + 3*hex_width/4,y_offset),
+											(x_offset + hex_width/4,y_offset)]
+										,0)
+		animated_hexagons = []
 		#detect a dead grid
 		dead = False
 		if old_hexagons == hexagons and not paused:
