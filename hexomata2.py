@@ -410,7 +410,7 @@ def build_grid():
 											-grid_total+grid_width*4,
 											-1,
 											-grid_width+1,
-											-grid_width-1,
+											-grid_width*2-1,
 											-grid_total+grid_width*2-1,
 											-grid_width*3+1,
 											-grid_total+grid_width+1,
