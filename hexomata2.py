@@ -876,12 +876,15 @@ def main():
 	blank_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 280), (100, 30)),
 														text='Blank',
 														manager=manager)
-	sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 310), (100, 30)),
+	random_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 310), (100, 30)),
+														text='Random',
+														manager=manager)
+	sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 340), (100, 30)),
 														text='Sound',
 														manager=manager)
 	if sound:
 		sound_button.select()
-	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 380), (100, 30)),
+	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 410), (100, 30)),
 														text='Render',
 														manager=manager)
 	clock = pygame.time.Clock()
@@ -901,8 +904,10 @@ def main():
 				hexagons = []
 				build_grid()
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-				hexagons = []
-				build_grid()
+				if paused:
+					paused = False
+				else:
+					paused = True
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				for k,pos in enumerate(hexagons):
 					if pos[0].collidepoint(event.pos): 
@@ -1012,6 +1017,9 @@ def main():
 					else:
 						paused = True
 						paused_button.select()
+				if event.ui_element == random_button:
+					hexagons = []
+					build_grid()
 				if event.ui_element == blank_button:
 					if not paused:
 						paused = True
@@ -1376,7 +1384,7 @@ def main():
 										,0)
 		animated_hexagons = []
 		if paused:
-			screen.blit(font.render('--PAUSED--',0,'White'),(0,height-30))
+			screen.blit(font.render('--PAUSED--',0,'White'),(10,height-30))
 		#detect a dead grid
 		dead = False
 		if old_hexagons == hexagons and not paused:

@@ -8,7 +8,7 @@ Hexomata2 is an 18 neighbor system with the ability to switch back to 6 neighbor
 
 ![Screenshot 2023-03-26 22 41 47](https://user-images.githubusercontent.com/25610408/227827765-d3e715ec-4235-4eef-a6d2-bec1b9fd7bb4.png)
 
-Control survival/birth ruleset, FPS and cell size. Space to reset with random field. Render to images option (goes in render/ folder). Draw your own pattern with Blank and then unPause to watch it grow.
+Control survival/birth ruleset, FPS and cell size. Draw your own pattern with Blank and then unPause to watch it grow. Try a random field.
 
 If you are rendering frames to the render folder then use the following command to assemble into a video:
 
