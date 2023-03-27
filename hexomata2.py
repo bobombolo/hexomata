@@ -13,7 +13,7 @@ sound = True
 grow_sound = pygame.mixer.Sound('sounds/click.wav')
 tile_sound = pygame.mixer.Sound('sounds/clack.wav')
 fps = 5
-ruleset = '23/2'
+nnum = 18 #the neighbor numbers either 6 or 18
 survival_rules = [False,True,True,True,True,False,False,False,False,False,False,False,False,False,False,False,False,False,False]
 birth_rules = [False,True,False,False,True,False,False,False,False,False,False,False,False,False,False,False,False,False,False]
 hex_width = 50
@@ -26,7 +26,7 @@ def main():
 	global screen
 	global width
 	global height
-	global ruleset
+	global nnum
 	global fps
 	global hex_width
 	global show_grid
@@ -81,61 +81,85 @@ def main():
 														manager=manager)
 	if survival_rules[7]:
 		s7.select()
+	if nnum == 6:
+		s7.disable()
 	s8 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((480, 0), (45, 30)),
 														text='8',
 														manager=manager)
 	if survival_rules[8]:
 		s8.select()
+	if nnum == 6:
+		s8.disable()
 	s9 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((530, 0), (45, 30)),
 														text='9',
 														manager=manager)
 	if survival_rules[9]:
 		s9.select()
+	if nnum == 6:
+		s9.disable()
 	s10 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((580, 0), (45, 30)),
 														text='10',
 														manager=manager)
 	if survival_rules[10]:
 		s10.select()
+	if nnum == 6:
+		s10.disable()
 	s11 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((630, 0), (45, 30)),
 														text='11',
 														manager=manager)
 	if survival_rules[11]:
 		s11.select()
+	if nnum == 6:
+		s11.disable()
 	s12 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((680, 0), (45, 30)),
 														text='12',
 														manager=manager)
 	if survival_rules[12]:
 		s12.select()
+	if nnum == 6:
+		s12.disable()
 	s13 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((730, 0), (45, 30)),
 														text='13',
 														manager=manager)
 	if survival_rules[13]:
 		s13.select()
+	if nnum == 6:
+		s13.disable()
 	s14 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((780, 0), (45, 30)),
 														text='14',
 														manager=manager)
 	if survival_rules[14]:
 		s14.select()
+	if nnum == 6:
+		s14.disable()
 	s15 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((830, 0), (45, 30)),
 														text='15',
 														manager=manager)
 	if survival_rules[15]:
 		s15.select()
+	if nnum == 6:
+		s15.disable()
 	s16 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((880, 0), (45, 30)),
 														text='16',
 														manager=manager)
 	if survival_rules[16]:
 		s16.select()
+	if nnum == 6:
+		s16.disable()
 	s17 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((930, 0), (45, 30)),
 														text='17',
 														manager=manager)
 	if survival_rules[17]:
 		s17.select()
+	if nnum == 6:
+		s17.disable()
 	s18 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((980, 0), (45, 30)),
 														text='18',
 														manager=manager)
 	if survival_rules[18]:
 		s18.select()
+	if nnum == 6:
+		s18.disable()
 	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10,35),(75,20)),
 														manager=manager,
 														text='Birth:')
@@ -179,91 +203,122 @@ def main():
 														manager=manager)
 	if birth_rules[7]:
 		b7.select()
+	if nnum == 6:
+		b7.disable()
 	b8 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((480, 30), (45, 30)),
 														text='8',
 														manager=manager)
 	if birth_rules[8]:
 		b8.select()
+	if nnum == 6:
+		b8.disable()
 	b9 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((530, 30), (45, 30)),
 														text='9',
 														manager=manager)
 	if birth_rules[9]:
 		b9.select()
+	if nnum == 6:
+		b9.disable()
 	b10 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((580, 30), (45, 30)),
 														text='10',
 														manager=manager)
 	if birth_rules[10]:
 		b10.select()
+	if nnum == 6:
+		b10.disable()
 	b11 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((630, 30), (45, 30)),
 														text='11',
 														manager=manager)
 	if birth_rules[11]:
 		b11.select()
+	if nnum == 6:
+		b11.disable()
 	b12 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((680, 30), (45, 30)),
 														text='12',
 														manager=manager)
 	if birth_rules[12]:
 		b12.select()
+	if nnum == 6:
+		b12.disable()
 	b13 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((730, 30), (45, 30)),
 														text='13',
 														manager=manager)
 	if birth_rules[13]:
 		b13.select()
+	if nnum == 6:
+		b13.disable()
 	b14 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((780, 30), (45, 30)),
 														text='14',
 														manager=manager)
 	if birth_rules[14]:
 		b14.select()
+	if nnum == 6:
+		b14.disable()
 	b15 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((830, 30), (45, 30)),
 														text='15',
 														manager=manager)
 	if birth_rules[15]:
 		b15.select()
+	if nnum == 6:
+		b15.disable()
 	b16 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((880, 30), (45, 30)),
 														text='16',
 														manager=manager)
 	if birth_rules[16]:
 		b16.select()
+	if nnum == 6:
+		b16.disable()
 	b17 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((930, 30), (45, 30)),
 														text='17',
 														manager=manager)
 	if birth_rules[17]:
 		b17.select()
+	if nnum == 6:
+		b17.disable()
 	b18 = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((980, 30), (45, 30)),
 														text='18',
 														manager=manager)
 	if birth_rules[18]:
 		b18.select()
-	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((-35,60),(100,20)),
+	if nnum == 6:
+		b18.disable()
+	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10,66),(45,20)),
+														manager=manager,
+														text='N:')
+	neighbor_menu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((45,60),(45,30)),
+														manager=manager,
+														options_list=['6','18'],
+														starting_option=str(nnum))
+	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((-35,90),(100,20)),
 														manager=manager,
 														text='FPS')
-	fps_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 80), (100, 30)),
+	fps_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 110), (100, 30)),
 														manager=manager,
 														initial_text=str(fps))
-	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((-30,110),(140,20)),
+	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((-30,140),(140,20)),
 														manager=manager,
 														text='Tile Width')
-	hexwidth_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 130), (100, 30)),
+	hexwidth_field = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((0, 160), (100, 30)),
 														manager=manager,
 														initial_text=str(hex_width))
-	showgrid_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 160), (100, 30)),
+	showgrid_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 190), (100, 30)),
 														text='Show Grid',
 														manager=manager)
-	shownumbers_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 190), (100, 30)),
+	shownumbers_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 220), (100, 30)),
 														text='Show Nums',
 														manager=manager)
-	paused_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 220), (100, 30)),
+	paused_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 250), (100, 30)),
 														text='Pause',
 														manager=manager)
-	blank_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 250), (100, 30)),
+	blank_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 280), (100, 30)),
 														text='Blank',
 														manager=manager)
-	sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 280), (100, 30)),
+	sound_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 310), (100, 30)),
 														text='Sound',
 														manager=manager)
 	if sound:
 		sound_button.select()
-	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 350), (100, 30)),
+	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 380), (100, 30)),
 														text='Render',
 														manager=manager)
 	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((width/2-250,height-30),(500,20)),
@@ -815,7 +870,11 @@ def main():
 	#Calculate and colorize the initial random field
 	for k,pos in enumerate(hexagons):
 		neighbor_count = 0
-		for offset in pos[3]+pos[4]:
+		if nnum == 6:
+			n = pos[3]
+		elif nnum == 18:
+			n = pos[3]+pos[4]
+		for offset in n:
 			if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
 				if hexagons[k+offset][1]:
 					neighbor_count += 1
@@ -848,7 +907,11 @@ def main():
 						else:
 							hexagons[k] = pos[0],1,pos[2],pos[3],pos[4]
 						#breifly highlight the neighborhood of the selected tile
-						for offset in pos[3]+pos[4]:
+						if nnum == 6:
+							n = pos[3]
+						elif nnum == 18:
+							n = pos[3]+pos[4]
+						for offset in n:
 							x_offset = hexagons[k+offset][0].x
 							y_offset = hexagons[k+offset][0].y
 							animated_hexagons.append([x_offset,y_offset])
@@ -859,6 +922,59 @@ def main():
 					hex_width = int(event.text)
 					hex_height = int(hex_width * 0.8660254)
 					if is_running: is_running = False
+			if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+				if event.ui_element == neighbor_menu:
+					nnum = int(event.text)
+					if nnum == 6:
+						s7.disable()
+						s8.disable()
+						s9.disable()
+						s10.disable()
+						s11.disable()
+						s12.disable()
+						s13.disable()
+						s14.disable()
+						s15.disable()
+						s16.disable()
+						s17.disable()
+						s18.disable()
+						b7.disable()
+						b8.disable()
+						b9.disable()
+						b10.disable()
+						b11.disable()
+						b12.disable()
+						b13.disable()
+						b14.disable()
+						b15.disable()
+						b16.disable()
+						b17.disable()
+						b18.disable()
+					elif nnum == 18:
+						s7.enable()
+						s8.enable()
+						s9.enable()
+						s10.enable()
+						s11.enable()
+						s12.enable()
+						s13.enable()
+						s14.enable()
+						s15.enable()
+						s16.enable()
+						s17.enable()
+						s18.enable()
+						b7.enable()
+						b8.enable()
+						b9.enable()
+						b10.enable()
+						b11.enable()
+						b12.enable()
+						b13.enable()
+						b14.enable()
+						b15.enable()
+						b16.enable()
+						b17.enable()
+						b18.enable()
 			if event.type == pygame_gui.UI_BUTTON_PRESSED:
 				if event.ui_element == showgrid_button:
 					if show_grid:
@@ -1210,7 +1326,11 @@ def main():
 			#compute next iteration
 			if not paused:
 				neighbor_count = 0
-				for offset in pos[3]+pos[4]:
+				if nnum == 6:
+					n = pos[3]
+				elif nnum == 18:
+					n = pos[3]+pos[4]
+				for offset in n:
 					if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
 						if old_hexagons[k+offset][1]:
 							neighbor_count += 1
