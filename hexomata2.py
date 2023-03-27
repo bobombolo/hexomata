@@ -26,9 +26,9 @@ paused = False
 animated_hexagons = [] #highlights neighbors when tile is clicked
 hexagons = [] #the master list [rect,active,neighbor_count,6-neighbors, 12-cousins
 def build_grid():
-	grid_width = int((width-hex_width*2)/(hex_width+hex_width/2))
+	grid_width = int((width-3*width/hex_width)/(hex_width+hex_width/2))
 	if grid_width%2: grid_width -= 1 #we only want an even number of columns
-	grid_height = int((height-hex_height)/(hex_height/2))
+	grid_height = int((height-3*height/hex_height)/(hex_height/2))
 	if grid_height%2: grid_height -= 1 #we only want an even number of rows
 	grid_total = grid_width*grid_height
 	hex_counter = 0
@@ -594,8 +594,6 @@ def main():
 	global animated_hexagons
 	global hexagons
 	
-	background = pygame.Surface((width, height))
-	background.fill((0,0,0))
 	manager = pygame_gui.UIManager((width, height))
 	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((5,5),(75,20)),
 														manager=manager,
@@ -882,9 +880,6 @@ def main():
 	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 380), (100, 30)),
 														text='Render',
 														manager=manager)
-	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((width/2-250,height-30),(500,20)),
-														manager=manager,
-														text='SPACE to reset -- Click Mouse to activate / deactivate a tile')
 	clock = pygame.time.Clock()
 	is_running = True
 	build_grid()
@@ -895,13 +890,15 @@ def main():
 			if event.type == pygame.QUIT:
 				is_running = False
 				quit()
-			if event.type == pygame.WINDOWRESIZED:
-				#screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
-				width = screen.get_width()
-				height = screen.get_height()
-				is_running = False
+			if event.type == pygame.VIDEORESIZE:
+				width = event.w
+				height = event.h
+				#screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+				hexagons = []
+				build_grid()
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-				if is_running: is_running = False
+				hexagons = []
+				build_grid()
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				for k,pos in enumerate(hexagons):
 					if pos[0].collidepoint(event.pos): 
@@ -1292,9 +1289,9 @@ def main():
 						b18.select()
 			manager.process_events(event)
 		manager.update(time_delta)
+		background = pygame.Surface((width, height))
+		background.fill((0,0,0))
 		screen.blit(background, (0, 0))
-		if paused:
-			screen.blit(font.render('--PAUSED--',0,'White'),(0,height-30))
 		#draw last iteration
 		old_hexagons = hexagons.copy()
 		for k,pos in enumerate(old_hexagons):
@@ -1374,6 +1371,8 @@ def main():
 											(x_offset + hex_width/4,y_offset)]
 										,0)
 		animated_hexagons = []
+		if paused:
+			screen.blit(font.render('--PAUSED--',0,'White'),(0,height-30))
 		#detect a dead grid
 		dead = False
 		if old_hexagons == hexagons and not paused:
