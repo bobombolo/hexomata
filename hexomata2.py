@@ -25,6 +25,10 @@ render = False
 paused = False
 animated_hexagons = [] #highlights neighbors when tile is clicked
 hexagons = [] #the master list [rect,active,neighbor_count,6-neighbors, 12-cousins
+colors = {'n6' : ['Yellow','Orange','Red','Magenta','Purple','Blue','Green'],
+			'n18' : ['#FFFF00','#BFFF00','#80FF00','#40FF00','#00FF00','#00FF40',
+					'#00FF80','#00FFBF','#00FFFF','#00BFFF','#0080FF','#0040FF',
+					'#0000FF','#4000FF','#8000FF','#BF00FF','#FF00FF','#FF00BF','#FF0080']}
 def build_grid():
 	left_margin = 140
 	right_margin = 10
@@ -909,19 +913,19 @@ def main():
 				else:
 					paused = True
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				for k,pos in enumerate(hexagons):
-					if pos[0].collidepoint(event.pos): 
+				for k,hex in enumerate(hexagons):
+					if hex[0].collidepoint(event.pos): 
 						if sound:
 							tile_sound.play()
-						if pos[1]:
-							hexagons[k] = pos[0],0,pos[2],pos[3],pos[4]
+						if hex[1]:
+							hexagons[k] = hex[0],0,hex[2],hex[3],hex[4]
 						else:
-							hexagons[k] = pos[0],1,pos[2],pos[3],pos[4]
+							hexagons[k] = hex[0],1,hex[2],hex[3],hex[4]
 						#breifly highlight the neighborhood of the selected tile
 						if nnum == 6:
-							n = pos[3]
+							n = hex[3]
 						elif nnum == 18:
-							n = pos[3]+pos[4]
+							n = hex[3]+hex[4]
 						for offset in n:
 							x_offset = hexagons[k+offset][0].x
 							y_offset = hexagons[k+offset][0].y
@@ -1306,38 +1310,16 @@ def main():
 		screen.blit(background, (0, 0))
 		#draw last iteration
 		old_hexagons = hexagons.copy()
-		for k,pos in enumerate(old_hexagons):
-			x_offset = pos[0].x
-			y_offset = pos[0].y
+		
+		for k,hex in enumerate(old_hexagons):
+			x_offset = hex[0].x
+			y_offset = hex[0].y
 			color='Black'
-			if pos[1]:
+			if hex[1]:
 				if nnum == 6:
-					if pos[2] == 0: color='Yellow'
-					elif pos[2] == 1: color='Orange'
-					elif pos[2] == 2: color='Red'
-					elif pos[2] == 3: color='Magenta'
-					elif pos[2] == 4: color='Purple'
-					elif pos[2] == 5: color='Blue'
-					elif pos[2] == 6: color='Green'
+					color = colors['n6'][hex[2]]
 				elif nnum == 18:
-					if pos[2] == 0: color='#FFFF00'
-					elif pos[2] == 1: color='#BFFF00'
-					elif pos[2] == 3: color='#80FF00'
-					elif pos[2] == 4: color='#40FF00'
-					elif pos[2] == 5: color='#00FF00'
-					elif pos[2] == 6: color='#00FF40'
-					elif pos[2] == 7: color='#00FF80'
-					elif pos[2] == 8: color='#00FFBF'
-					elif pos[2] == 9: color='#00FFFF'
-					elif pos[2] == 10: color='#00BFFF'
-					elif pos[2] == 11: color='#0080FF'
-					elif pos[2] == 12: color='#0040FF'
-					elif pos[2] == 13: color='#0000FF'
-					elif pos[2] == 14: color='#4000FF'
-					elif pos[2] == 15: color='#8000FF'
-					elif pos[2] == 16: color='#BF00FF'
-					elif pos[2] == 17: color='#FF00FF'
-					elif pos[2] == 18: color='#FF00BF'
+					color = colors['n18'][hex[2]]
 			pygame.draw.polygon(screen,color,[(x_offset,y_offset + hex_height/2),
 												(x_offset + hex_width/4,y_offset + hex_height),
 												(x_offset + 3*hex_width/4,y_offset + hex_height),
@@ -1351,26 +1333,26 @@ def main():
 			if not paused:
 				neighbor_count = 0
 				if nnum == 6:
-					n = pos[3]
+					n = hex[3]
 				elif nnum == 18:
-					n = pos[3]+pos[4]
+					n = hex[3]+hex[4]
 				for offset in n:
 					if k+offset >= 0 and k+offset < len(hexagons): #shouldn't need this
 						if old_hexagons[k+offset][1]:
 							neighbor_count += 1
 					#else: print('out of bounds: ',k,'+',offset)
-				if pos[1]:
+				if hex[1]:
 					#survival rules
 					if survival_rules[neighbor_count]:
-						hexagons[k] = [pos[0],1,neighbor_count,pos[3],pos[4]]
+						hexagons[k] = [hex[0],1,neighbor_count,hex[3],hex[4]]
 					else:
-						hexagons[k] = [pos[0],0,neighbor_count,pos[3],pos[4]]
-				if not pos[1]:
+						hexagons[k] = [hex[0],0,neighbor_count,hex[3],hex[4]]
+				if not hex[1]:
 					#birth rules
 					if birth_rules[neighbor_count]:
-						hexagons[k] = [pos[0],1,neighbor_count,pos[3],pos[4]]
+						hexagons[k] = [hex[0],1,neighbor_count,hex[3],hex[4]]
 					else:
-						hexagons[k] = [pos[0],0,neighbor_count,pos[3],pos[4]]
+						hexagons[k] = [hex[0],0,neighbor_count,hex[3],hex[4]]
 		if animated_hexagons:
 			for k, hexagon in enumerate(animated_hexagons):
 				x_offset = hexagon[0]
