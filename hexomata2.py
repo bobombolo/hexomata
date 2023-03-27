@@ -26,20 +26,24 @@ paused = False
 animated_hexagons = [] #highlights neighbors when tile is clicked
 hexagons = [] #the master list [rect,active,neighbor_count,6-neighbors, 12-cousins
 def build_grid():
-	grid_width = int((width-3*width/hex_width)/(hex_width+hex_width/2))
+	left_margin = 140
+	right_margin = 10
+	top_margin = 70
+	bottom_margin = 10
+	grid_width = int((width-(left_margin+right_margin))/(hex_width+hex_width/2))
 	if grid_width%2: grid_width -= 1 #we only want an even number of columns
-	grid_height = int((height-3*height/hex_height)/(hex_height/2))
+	grid_height = int((height-(top_margin+bottom_margin))/(hex_height/2))
 	if grid_height%2: grid_height -= 1 #we only want an even number of rows
 	grid_total = grid_width*grid_height
 	hex_counter = 0
 	for y in range(grid_height):
-		y_offset = hex_height * y / 2 + 70
+		y_offset = hex_height * y / 2 + top_margin
 		for x in range(grid_width):
 			
 			if not y%2:
-				x_offset = (hex_width + hex_width / 2 ) * x +140
+				x_offset = (hex_width + hex_width / 2 ) * x + left_margin
 			else:
-				x_offset = (hex_width + hex_width / 2 ) * x - 3 * hex_width / 4 +140
+				x_offset = (hex_width + hex_width / 2 ) * x - 3 * hex_width / 4 + left_margin
 			
 			hexagon = pygame.draw.polygon(screen,'Black',[(x_offset,y_offset + hex_height/2),
 										(x_offset + hex_width/4,y_offset + hex_height),
