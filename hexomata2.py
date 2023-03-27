@@ -5,7 +5,7 @@ import random
 
 pygame.init()
 width = 1024
-height = 600
+height = 768
 pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 font = pygame.font.SysFont(None, 24)
@@ -888,7 +888,7 @@ def main():
 														manager=manager)
 	if sound:
 		sound_button.select()
-	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 410), (100, 30)),
+	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 370), (100, 30)),
 														text='Render',
 														manager=manager)
 	clock = pygame.time.Clock()
@@ -1374,9 +1374,9 @@ def main():
 			screen.blit(font.render('--DEAD--',0,'White'),(15,height-60))
 		#overlay grid
 		if show_grid:
-			for k,pos in enumerate(hexagons):
-				x_offset = pos[0].x
-				y_offset = pos[0].y
+			for hex in hexagons:
+				x_offset = hex[0].x
+				y_offset = hex[0].y
 				pygame.draw.polygon(screen,'White',[(x_offset,y_offset + hex_height/2),
 													(x_offset + hex_width/4,y_offset + hex_height),
 													(x_offset + 3*hex_width/4,y_offset + hex_height),
@@ -1384,6 +1384,22 @@ def main():
 													(x_offset + 3*hex_width/4,y_offset),
 													(x_offset + hex_width/4,y_offset)]
 												,1)
+		#draw legend
+		swatch_x = 0
+		swatch_y = 0
+		for i in range(0,nnum+1):
+			swatch_surf = pygame.Surface((25,25))
+			if nnum == 6:
+				swatch_surf.fill(colors['n6'][i])
+			elif nnum == 18:
+				swatch_surf.fill(colors['n18'][i])
+			screen.blit(swatch_surf,(swatch_x*30+8,swatch_y*30+405))
+			screen.blit(font.render(str(i),False,'Black'),(swatch_x*30+12,swatch_y*30+410))
+			if swatch_x == 2:
+				swatch_x = 0
+				swatch_y += 1
+			else: 
+				swatch_x += 1
 		manager.draw_ui(screen)
 		if not paused and not dead and sound:
 			grow_sound.play()
