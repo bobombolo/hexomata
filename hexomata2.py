@@ -573,7 +573,7 @@ def build_grid():
 			if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
 				if hexagons[k+offset][1]:
 					neighbor_count += 1
-			else: print('out of bounds: ',k,'+',offset)
+			#else: print('out of bounds: ',k,'+',offset)
 		if pos[1]:
 			hexagons[k] = [pos[0],1,neighbor_count,pos[3],pos[4]]
 		else:
@@ -1349,7 +1349,7 @@ def main():
 					if k+offset >= 0 and k+offset < len(hexagons): #shouldn't need this
 						if old_hexagons[k+offset][1]:
 							neighbor_count += 1
-					else: print('out of bounds: ',k,'+',offset)
+					#else: print('out of bounds: ',k,'+',offset)
 				if pos[1]:
 					#survival rules
 					if survival_rules[neighbor_count]:
