@@ -25,10 +25,12 @@ render = False
 paused = False
 animated_hexagons = [] #highlights neighbors when tile is clicked
 hexagons = [] #the master list [rect,active,neighbor_count,6-neighbors, 12-cousins
-colors = {'n6' : ['Yellow','Orange','Red','Magenta','Purple','Blue','Green'],
+colors = {'n6' : ['#FFFF00','#FFA500','#FF0000','#FF00FF','#800080','#0000FF','#008000'],
 			'n18' : ['#FFFF00','#BFFF00','#80FF00','#40FF00','#00FF00','#00FF40',
 					'#00FF80','#00FFBF','#00FFFF','#00BFFF','#0080FF','#0040FF',
 					'#0000FF','#4000FF','#8000FF','#BF00FF','#FF00FF','#FF00BF','#FF0080']}
+current_swatch = None
+legend_buttons = []
 def build_grid():
 	left_margin = 140
 	right_margin = 10
@@ -891,6 +893,7 @@ def main():
 	render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 370), (100, 30)),
 														text='Render',
 														manager=manager)
+	color_picker = None
 	clock = pygame.time.Clock()
 	is_running = True
 	build_grid()
@@ -930,6 +933,18 @@ def main():
 							x_offset = hexagons[k+offset][0].x
 							y_offset = hexagons[k+offset][0].y
 							animated_hexagons.append([x_offset,y_offset])
+				for k,swatch in enumerate(legend_buttons):
+					if swatch.collidepoint(event.pos):
+						current_swatch = k
+						color =  colors['n'+str(nnum)][k]
+						color_picker = pygame_gui.windows.UIColourPickerDialog(rect=pygame.Rect((100, 300), (390, 390)),
+														window_title='pick color for '+str(k)+' neighbors',
+														manager=manager,
+														initial_colour=pygame.Color(color)
+														)
+			if event.type == pygame_gui.UI_COLOUR_PICKER_COLOUR_PICKED:
+				colors['n'+str(nnum)][current_swatch] = event.colour
+				current_swatch = None
 			if event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
 				if event.ui_element == fps_slider:
 					fps = event.value
@@ -1365,13 +1380,6 @@ def main():
 											(x_offset + hex_width/4,y_offset)]
 										,0)
 		animated_hexagons = []
-		if paused:
-			screen.blit(font.render('--PAUSED--',0,'White'),(10,height-30))
-		#detect a dead grid
-		dead = False
-		if old_hexagons == hexagons and not paused:
-			dead = True
-			screen.blit(font.render('--DEAD--',0,'White'),(15,height-60))
 		#overlay grid
 		if show_grid:
 			for hex in hexagons:
@@ -1387,19 +1395,28 @@ def main():
 		#draw legend
 		swatch_x = 0
 		swatch_y = 0
+		legend_buttons = []
 		for i in range(0,nnum+1):
 			swatch_surf = pygame.Surface((25,25))
 			if nnum == 6:
 				swatch_surf.fill(colors['n6'][i])
 			elif nnum == 18:
 				swatch_surf.fill(colors['n18'][i])
-			screen.blit(swatch_surf,(swatch_x*30+8,swatch_y*30+405))
+			rect = screen.blit(swatch_surf,(swatch_x*30+8,swatch_y*30+405))
 			screen.blit(font.render(str(i),False,'Black'),(swatch_x*30+12,swatch_y*30+410))
+			legend_buttons.append(rect)
 			if swatch_x == 2:
 				swatch_x = 0
 				swatch_y += 1
 			else: 
 				swatch_x += 1
+		if paused:
+			screen.blit(font.render('--PAUSED--',0,'White'),(10,height-30))
+		#detect a dead grid
+		dead = False
+		if old_hexagons == hexagons and not paused:
+			dead = True
+			screen.blit(font.render('--DEAD--',0,'White'),(15,height-60))
 		manager.draw_ui(screen)
 		if not paused and not dead and sound:
 			grow_sound.play()
