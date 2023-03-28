@@ -937,6 +937,8 @@ def main():
 					if swatch.collidepoint(event.pos):
 						current_swatch = k
 						color =  colors['n'+str(nnum)][k]
+						if color_picker:
+							color_picker.hide()
 						color_picker = pygame_gui.windows.UIColourPickerDialog(rect=pygame.Rect((100, 300), (390, 390)),
 														window_title='pick color for '+str(k)+' neighbors',
 														manager=manager,
