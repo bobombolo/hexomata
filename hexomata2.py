@@ -8,7 +8,7 @@ width = 1024
 height = 768
 pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
-font = pygame.font.SysFont(None, 24)
+font = pygame.font.Font(None, 24)
 sound = True
 grow_sound = pygame.mixer.Sound('sounds/click.wav')
 tile_sound = pygame.mixer.Sound('sounds/clack.wav')
@@ -32,7 +32,7 @@ colors = {'n6' : ['#FFFF00','#FFA500','#FF0000','#FF00FF','#800080','#0000FF','#
 current_swatch = None
 legend_buttons = []
 def build_grid():
-	left_margin = 140
+	left_margin = 110
 	right_margin = 10
 	top_margin = 70
 	bottom_margin = 10
@@ -47,10 +47,9 @@ def build_grid():
 		for x in range(grid_width):
 			
 			if not y%2:
-				x_offset = (hex_width + hex_width / 2 ) * x + left_margin
+				x_offset = (hex_width + hex_width / 2 ) * x + 3 * hex_width / 4 + left_margin
 			else:
-				x_offset = (hex_width + hex_width / 2 ) * x - 3 * hex_width / 4 + left_margin
-			
+				x_offset = (hex_width + hex_width / 2 ) * x + left_margin
 			hexagon = pygame.draw.polygon(screen,'Black',[(x_offset,y_offset + hex_height/2),
 										(x_offset + hex_width/4,y_offset + hex_height),
 										(x_offset + 3*hex_width/4,y_offset + hex_height),
