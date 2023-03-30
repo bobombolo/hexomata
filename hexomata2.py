@@ -935,33 +935,33 @@ def main():
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
 				current_window_x += 50
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				for k,hex in enumerate(hexagons):
-					offset_pos = (event.pos[0]+current_window_x-100,event.pos[1]+current_window_y-60)
-					if event.pos[0] > 100 and event.pos[1] > 60 and hex[0].collidepoint(offset_pos): 
-						if sound:
-							tile_sound.play()
-						if hex[1]:
-							hexagons[k] = [hex[0],0,hex[2],hex[3],hex[4],hex[5]]
-						else:
-							hexagons[k] = [hex[0],1,hex[2],hex[3],hex[4],hex[5]]
-						build_grid() #to colorize what we're drawing
-						#breifly highlight the neighborhood of the selected tile
-						if nnum == 6:
-							n = hex[3]
-						elif nnum == 18:
-							n = hex[3]+hex[4]
-						for offset in n:
-							x_offset = hexagons[k+offset][0].x
-							y_offset = hexagons[k+offset][0].y
-							animated_hexagons.append([x_offset,y_offset])
-						
+				if not color_picker or not color_picker.relative_rect.collidepoint(event.pos):
+					for k,hex in enumerate(hexagons):
+						offset_pos = (event.pos[0]+current_window_x-100,event.pos[1]+current_window_y-60)
+						if event.pos[0] > 100 and event.pos[1] > 60 and hex[0].collidepoint(offset_pos): 
+							if sound:
+								tile_sound.play()
+							if hex[1]:
+								hexagons[k] = [hex[0],0,hex[2],hex[3],hex[4],hex[5]]
+							else:
+								hexagons[k] = [hex[0],1,hex[2],hex[3],hex[4],hex[5]]
+							build_grid() #to colorize what we're drawing
+							#breifly highlight the neighborhood of the selected tile
+							if nnum == 6:
+								n = hex[3]
+							elif nnum == 18:
+								n = hex[3]+hex[4]
+							for offset in n:
+								x_offset = hexagons[k+offset][0].x
+								y_offset = hexagons[k+offset][0].y
+								animated_hexagons.append([x_offset,y_offset])
 				for k,swatch in enumerate(legend_buttons):
 					if swatch.collidepoint(event.pos):
 						current_swatch = k
 						color =  colors['n'+str(nnum)][k]
 						if color_picker:
 							color_picker.hide()
-						color_picker = pygame_gui.windows.UIColourPickerDialog(rect=pygame.Rect((100, 250), (390, 390)),
+						color_picker = pygame_gui.windows.UIColourPickerDialog(rect=pygame.Rect((100, 200), (390, 390)),
 														window_title='pick color for '+str(k)+' neighbors',
 														manager=manager,
 														initial_colour=pygame.Color(color)
@@ -969,6 +969,7 @@ def main():
 			if event.type == pygame_gui.UI_COLOUR_PICKER_COLOUR_PICKED:
 				colors['n'+str(nnum)][current_swatch] = event.colour
 				current_swatch = None
+				color_picker = None
 			if event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
 				if event.ui_element == fps_slider:
 					fps = event.value
