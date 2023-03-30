@@ -5,18 +5,23 @@ import random
 
 pygame.init()
 width = 1024
-height = 768
+height = 600
+super_width = 1920
+super_height = 1080
+current_window_x = super_width/2-(width-110)/2
+current_window_y = super_height/2-(height-110)/2
+grid_surface = pygame.Surface((super_width,super_height))
 pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 font = pygame.font.Font(None, 24)
 sound = True
 grow_sound = pygame.mixer.Sound('sounds/click.wav')
 tile_sound = pygame.mixer.Sound('sounds/clack.wav')
-fps = 5
+fps = 25
 nnum = 6 #the neighbor numbers either 6 or 18
 survival_rules = [False,False,True,False,True,False,True,False,False,False,False,False,False,False,False,False,False,False,False]
 birth_rules = [False,True,False,True,False,True,False,False,False,False,False,False,False,False,False,False,False,False,False]
-hex_width = 20
+hex_width = 15
 hex_radius = hex_width / 2
 hex_height = int(hex_width * 0.8660254)
 show_grid = False
@@ -31,26 +36,29 @@ colors = {'n6' : ['#FFFF00','#FFA500','#FF0000','#FF00FF','#800080','#0000FF','#
 					'#0000FF','#4000FF','#8000FF','#BF00FF','#FF00FF','#FF00BF','#FF0080']}
 current_swatch = None
 legend_buttons = []
-def build_grid():
-	left_margin = 110
-	right_margin = 10
-	top_margin = 70
-	bottom_margin = 10
-	grid_width = int((width-(left_margin+right_margin))/(hex_width+hex_width/2))
+def build_grid(random_field=False):
+	global hexagons
+	if not random_field:
+		old_poss = []
+		for k,hex in enumerate(hexagons):
+			if hex[1]:
+				old_poss.append(hex[5])
+	hexagons = []
+	grid_width = int(super_width/(hex_width+hex_width/2))
 	if grid_width%2: grid_width -= 1 #we only want an even number of columns
-	grid_height = int((height-(top_margin+bottom_margin))/(hex_height/2))
+	grid_height = int(super_height/(hex_height/2))
 	if grid_height%2: grid_height -= 1 #we only want an even number of rows
 	grid_total = grid_width*grid_height
-	hex_counter = 0
 	for y in range(grid_height):
-		y_offset = hex_height * y / 2 + top_margin
+		y_offset = hex_height * y / 2
 		for x in range(grid_width):
 			
 			if not y%2:
-				x_offset = (hex_width + hex_width / 2 ) * x + 3 * hex_width / 4 + left_margin
+				x_offset = (hex_width + hex_width / 2 ) * x + 3 * hex_width / 4
 			else:
-				x_offset = (hex_width + hex_width / 2 ) * x + left_margin
-			hexagon = pygame.draw.polygon(screen,'Black',[(x_offset,y_offset + hex_height/2),
+				x_offset = (hex_width + hex_width / 2 ) * x
+			
+			hexagon = pygame.draw.polygon(grid_surface,'Black',[(x_offset,y_offset + hex_height/2),
 										(x_offset + hex_width/4,y_offset + hex_height),
 										(x_offset + 3*hex_width/4,y_offset + hex_height),
 										(x_offset + hex_width,y_offset + hex_height/2),
@@ -568,29 +576,35 @@ def build_grid():
 										grid_width*2-1,
 										grid_width*2+1,
 										-grid_width*2+1]
-			#hexagons index-> 0=rect, 1=state, 2=neighbor_count, 3=neighbor_offsets 4=cousin_offsets
-			hexagons.insert(hex_counter,[hexagon,random.randint(0,1),0,hex_neighbor_offsets,hex_cousin_offsets])
-			hex_counter += 1
-	#Calculate and colorize the initial random field
-	for k,pos in enumerate(hexagons):
+			#hexagons index-> 0=rect, 1=state, 2=neighbor_count, 3=neighbor_offsets 4=cousin_offsets 5=(col,row)
+			if random_field:
+				hexagons.append([hexagon,random.randint(0,1),0,hex_neighbor_offsets,hex_cousin_offsets,(x,y)])
+			elif (x,y) in old_poss:
+				hexagons.append([hexagon,1,0,hex_neighbor_offsets,hex_cousin_offsets,(x,y)])
+			else:
+				hexagons.append([hexagon,0,0,hex_neighbor_offsets,hex_cousin_offsets,(x,y)])
+	#Calculate and colorize the initial field
+	for k,hex in enumerate(hexagons):
 		neighbor_count = 0
 		if nnum == 6:
-			n = pos[3]
+			n = hex[3]
 		elif nnum == 18:
-			n = pos[3]+pos[4]
+			n = hex[3]+hex[4]
 		for offset in n:
 			if k+offset >= 0 and k+offset < grid_width*grid_height: #shouldn't need this
 				if hexagons[k+offset][1]:
 					neighbor_count += 1
 			#else: print('out of bounds: ',k,'+',offset)
-		if pos[1]:
-			hexagons[k] = [pos[0],1,neighbor_count,pos[3],pos[4]]
+		if hex[1]:
+			hexagons[k] = [hex[0],1,neighbor_count,hex[3],hex[4],hex[5]]
 		else:
-			hexagons[k] = [pos[0],0,neighbor_count,pos[3],pos[4]]
+			hexagons[k] = [hex[0],0,neighbor_count,hex[3],hex[4],hex[5]]
 def main():
 	global screen
 	global width
 	global height
+	global current_window_x
+	global current_window_y
 	global nnum
 	global fps
 	global hex_width
@@ -602,7 +616,6 @@ def main():
 	global sound
 	global animated_hexagons
 	global hexagons
-	
 	manager = pygame_gui.UIManager((width, height))
 	pygame_gui.elements.UILabel(relative_rect=pygame.Rect((5,5),(75,20)),
 														manager=manager,
@@ -895,10 +908,11 @@ def main():
 	color_picker = None
 	clock = pygame.time.Clock()
 	is_running = True
-	build_grid()
+	build_grid(True)
 	frame_num = 0 #for renders
 	while is_running:
 		time_delta = clock.tick(fps)/1000.0
+		grid_surface.fill('black')
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				is_running = False
@@ -906,23 +920,31 @@ def main():
 			if event.type == pygame.VIDEORESIZE:
 				width = event.w
 				height = event.h
-				#screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
-				hexagons = []
-				build_grid()
+				manager.set_window_resolution((width,height))
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 				if paused:
 					paused = False
 				else:
 					paused = True
+			if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+				current_window_y -= 50
+			if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+				current_window_y += 50
+			if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+				current_window_x -= 50
+			if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+				current_window_x += 50
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				for k,hex in enumerate(hexagons):
-					if hex[0].collidepoint(event.pos): 
+					offset_pos = (event.pos[0]+current_window_x-100,event.pos[1]+current_window_y-60)
+					if event.pos[0] > 100 and event.pos[1] > 60 and hex[0].collidepoint(offset_pos): 
 						if sound:
 							tile_sound.play()
 						if hex[1]:
-							hexagons[k] = hex[0],0,hex[2],hex[3],hex[4]
+							hexagons[k] = [hex[0],0,hex[2],hex[3],hex[4],hex[5]]
 						else:
-							hexagons[k] = hex[0],1,hex[2],hex[3],hex[4]
+							hexagons[k] = [hex[0],1,hex[2],hex[3],hex[4],hex[5]]
+						build_grid() #to colorize what we're drawing
 						#breifly highlight the neighborhood of the selected tile
 						if nnum == 6:
 							n = hex[3]
@@ -932,13 +954,14 @@ def main():
 							x_offset = hexagons[k+offset][0].x
 							y_offset = hexagons[k+offset][0].y
 							animated_hexagons.append([x_offset,y_offset])
+						
 				for k,swatch in enumerate(legend_buttons):
 					if swatch.collidepoint(event.pos):
 						current_swatch = k
 						color =  colors['n'+str(nnum)][k]
 						if color_picker:
 							color_picker.hide()
-						color_picker = pygame_gui.windows.UIColourPickerDialog(rect=pygame.Rect((100, 300), (390, 390)),
+						color_picker = pygame_gui.windows.UIColourPickerDialog(rect=pygame.Rect((100, 250), (390, 390)),
 														window_title='pick color for '+str(k)+' neighbors',
 														manager=manager,
 														initial_colour=pygame.Color(color)
@@ -952,7 +975,6 @@ def main():
 				if event.ui_element == tilewidth_slider:
 					hex_width = event.value
 					hex_height = int(hex_width * 0.8660254)
-					hexagons = []
 					build_grid()
 			if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
 				if event.ui_element == neighbor_menu:
@@ -1038,14 +1060,13 @@ def main():
 						paused = True
 						paused_button.select()
 				if event.ui_element == random_button:
-					hexagons = []
-					build_grid()
+					build_grid(True)
 				if event.ui_element == blank_button:
 					if not paused:
 						paused = True
 						paused_button.select()
-					for k,pos in enumerate(hexagons):
-						hexagons[k] = [pos[0],0,0,pos[3],pos[4]]
+					for k,hex in enumerate(hexagons):
+						hexagons[k] = [hex[0],0,0,hex[3],hex[4],hex[5]]
 				if event.ui_element == sound_button:
 					if sound:
 						sound = False
@@ -1336,7 +1357,7 @@ def main():
 					color = colors['n6'][hex[2]]
 				elif nnum == 18:
 					color = colors['n18'][hex[2]]
-			pygame.draw.polygon(screen,color,[(x_offset,y_offset + hex_height/2),
+			pygame.draw.polygon(grid_surface,color,[(x_offset,y_offset + hex_height/2),
 												(x_offset + hex_width/4,y_offset + hex_height),
 												(x_offset + 3*hex_width/4,y_offset + hex_height),
 												(x_offset + hex_width,y_offset + hex_height/2),
@@ -1344,7 +1365,7 @@ def main():
 												(x_offset + hex_width/4,y_offset)]
 											,0)
 			if show_numbers:
-				screen.blit(font.render(str(k), True, 'White'), (x_offset+hex_width/2-10, y_offset+hex_height/2-10))
+				grid_surface.blit(font.render(str(k), True, 'White'), (x_offset+hex_width/2-10, y_offset+hex_height/2-10))
 			#compute next iteration
 			if not paused:
 				neighbor_count = 0
@@ -1360,20 +1381,20 @@ def main():
 				if hex[1]:
 					#survival rules
 					if survival_rules[neighbor_count]:
-						hexagons[k] = [hex[0],1,neighbor_count,hex[3],hex[4]]
+						hexagons[k] = [hex[0],1,neighbor_count,hex[3],hex[4],hex[5]]
 					else:
-						hexagons[k] = [hex[0],0,neighbor_count,hex[3],hex[4]]
+						hexagons[k] = [hex[0],0,neighbor_count,hex[3],hex[4],hex[5]]
 				if not hex[1]:
 					#birth rules
 					if birth_rules[neighbor_count]:
-						hexagons[k] = [hex[0],1,neighbor_count,hex[3],hex[4]]
+						hexagons[k] = [hex[0],1,neighbor_count,hex[3],hex[4],hex[5]]
 					else:
-						hexagons[k] = [hex[0],0,neighbor_count,hex[3],hex[4]]
+						hexagons[k] = [hex[0],0,neighbor_count,hex[3],hex[4],hex[5]]
 		if animated_hexagons:
 			for k, hexagon in enumerate(animated_hexagons):
 				x_offset = hexagon[0]
 				y_offset = hexagon[1]
-				pygame.draw.polygon(screen,'White',[(x_offset,y_offset + hex_height/2),
+				pygame.draw.polygon(grid_surface,'White',[(x_offset,y_offset + hex_height/2),
 											(x_offset + hex_width/4,y_offset + hex_height),
 											(x_offset + 3*hex_width/4,y_offset + hex_height),
 											(x_offset + hex_width,y_offset + hex_height/2),
@@ -1386,7 +1407,7 @@ def main():
 			for hex in hexagons:
 				x_offset = hex[0].x
 				y_offset = hex[0].y
-				pygame.draw.polygon(screen,'White',[(x_offset,y_offset + hex_height/2),
+				pygame.draw.polygon(grid_surface,'White',[(x_offset,y_offset + hex_height/2),
 													(x_offset + hex_width/4,y_offset + hex_height),
 													(x_offset + 3*hex_width/4,y_offset + hex_height),
 													(x_offset + hex_width,y_offset + hex_height/2),
@@ -1418,13 +1439,15 @@ def main():
 		if old_hexagons == hexagons and not paused:
 			dead = True
 			screen.blit(font.render('--DEAD--',0,'White'),(15,height-60))
+		cropped_region = (current_window_x, current_window_y, width-100, height-60)
+		screen.blit(grid_surface, (100, 60), cropped_region)
 		manager.draw_ui(screen)
 		if not paused and not dead and sound:
 			grow_sound.play()
 		if is_running:
 			pygame.display.update()
 			if render:
-				pygame.image.save(screen,'render/hexomata'+str(frame_num)+'.png')
+				pygame.image.save(grid_surface,'render/hexomata'+str(frame_num)+'.png')
 			frame_num += 1
 	main()
 if __name__ == "__main__":
