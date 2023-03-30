@@ -5,6 +5,7 @@ Windows executable for old build of hexomata here https://drive.google.com/file/
 
 Hexomata2 is an 18 neighbor system with the ability to switch back to 6 neighbor. Windows executable here https://drive.google.com/file/d/14psNYcqUSVCzmia4938uJi_gPZOa8zIi/view
 
+Hexomata2 actually renders a 1920x1080 canvas that the application only sees a window of. Scroll around with the arrow keys.
 
 ![Screenshot 2023-03-26 22 41 47](https://user-images.githubusercontent.com/25610408/227827765-d3e715ec-4235-4eef-a6d2-bec1b9fd7bb4.png)
 
