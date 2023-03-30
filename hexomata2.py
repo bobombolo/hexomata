@@ -924,8 +924,10 @@ def main():
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 				if paused:
 					paused = False
+					paused_button.unselect()
 				else:
 					paused = True
+					paused_button.select()
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
 				current_window_y -= 50
 			if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
