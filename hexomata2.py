@@ -966,6 +966,9 @@ def main():
 														manager=manager,
 														initial_colour=pygame.Color(color)
 														)
+			#destroy the color picker if it is closed
+			if event.type == pygame_gui.UI_WINDOW_CLOSE and event.ui_object_id == '#colour_picker_dialog':
+				color_picker = None
 			if event.type == pygame_gui.UI_COLOUR_PICKER_COLOUR_PICKED:
 				colors['n'+str(nnum)][current_swatch] = event.colour
 				current_swatch = None
