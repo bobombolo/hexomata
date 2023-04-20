@@ -20,8 +20,19 @@ sound = True
 grow_sound = pygame.mixer.Sound('sounds/click.wav')
 tile_sound = pygame.mixer.Sound('sounds/clack.wav')
 sounds = {}
-for i in range(0,13):
-	sounds['piano'+str(i)] = pygame.mixer.Sound('sounds/piano.'+str(i)+'.ogg')
+sounds['ring'+str(0)] = pygame.mixer.Sound('sounds/click.wav')
+sounds['ring'+str(1)] = pygame.mixer.Sound('sounds/crow.wav')
+sounds['ring'+str(2)] = pygame.mixer.Sound('sounds/laugh.wav')
+sounds['ring'+str(3)] = pygame.mixer.Sound('sounds/yeah.wav')
+sounds['ring'+str(4)] = pygame.mixer.Sound('sounds/synth1.wav')
+sounds['ring'+str(5)] = pygame.mixer.Sound('sounds/thud.wav')
+sounds['ring'+str(6)] = pygame.mixer.Sound('sounds/alien.wav')
+sounds['ring'+str(7)] = pygame.mixer.Sound('sounds/sweep.wav')
+sounds['ring'+str(8)] = pygame.mixer.Sound('sounds/wacktom.wav')
+sounds['ring'+str(9)] = pygame.mixer.Sound('sounds/lotom.wav')
+sounds['ring'+str(10)] = pygame.mixer.Sound('sounds/hihat.wav')
+sounds['ring'+str(11)] = pygame.mixer.Sound('sounds/bass.wav')
+sounds['ring'+str(12)] = pygame.mixer.Sound('sounds/snare.wav')
 fps = 25
 survival_rules = [False,False,True,False,True,False,True]
 birth_rules = [False,True,False,True,False,True,False]
@@ -100,7 +111,10 @@ def build_grid(random_field=False):
 		
 				hexagon = draw_hexagon(x,y,'black',0)
 				
-				hexagons.append([hexagon,0, 0, ring_num,[]])
+				if random_field:
+					hexagons.append([hexagon,random.randint(0,1), 0, ring_num,[]])
+				else:
+					hexagons.append([hexagon,0, 0, ring_num,[]])
 	for k,hex in enumerate(hexagons):
 		neighbors = []
 		for j, neighbor in enumerate(hexagons):
@@ -264,7 +278,6 @@ while running:
 							hexagons[k] = [hex[0], 0, hex[2], hex[3], hex[4]]
 						else:
 							hexagons[k] = [hex[0], 1, hex[2], hex[3], hex[4]]
-						#build_grid() #to colorize what we're drawing
 						for neighbor in hex[4]:
 							x = hexagons[neighbor][0].x
 							y = hexagons[neighbor][0].y
@@ -458,14 +471,13 @@ while running:
 				for neighbor in hex[4]:
 					if old_hexagons[neighbor][1]:
 						neighbor_count += 1
-				hex[2] = neighbor_count
 				if hex[1] == 1 and survival_rules[neighbor_count]:
 					state = 1
 				elif hex[1] == 0 and birth_rules[neighbor_count]:
 					state = 1
 				else:
 					state = 0
-				hexagons[k] = [hex[0],state,hex[2],hex[3],hex[4]]
+				hexagons[k] = [hex[0],state,neighbor_count,hex[3],hex[4]]
 	#overlay grid
 	if show_grid:
 		for k, hex in enumerate(hexagons):
@@ -486,7 +498,9 @@ while running:
 			#pygame.draw.rect(grid_surface,'green',hex_center_rect,0)
 			if hex[1] and hex_center_rect.clipline(center,endpoint):
 				animated_hexagons.append([hex[0].x,hex[0].y])
-				sounds['piano'+str(hex[3])].play()
+				print((hex[2]+4)/10)
+				sounds['ring'+str(hex[3])].set_volume((hex[2]+4)/10)
+				sounds['ring'+str(hex[3])].play()
 	#render the flashing tiles
 	if animated_hexagons:
 		for k, hexagon in enumerate(animated_hexagons):
