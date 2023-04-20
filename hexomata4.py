@@ -498,7 +498,6 @@ while running:
 			#pygame.draw.rect(grid_surface,'green',hex_center_rect,0)
 			if hex[1] and hex_center_rect.clipline(center,endpoint):
 				animated_hexagons.append([hex[0].x,hex[0].y])
-				print((hex[2]+4)/10)
 				sounds['ring'+str(hex[3])].set_volume((hex[2]+4)/10)
 				sounds['ring'+str(hex[3])].play()
 	#render the flashing tiles
