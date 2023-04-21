@@ -21,13 +21,13 @@ grow_sound = pygame.mixer.Sound('sounds/click.wav')
 tile_sound = pygame.mixer.Sound('sounds/clack.wav')
 sounds = {}
 sounds['ring'+str(0)] = pygame.mixer.Sound('sounds/click.wav')
-sounds['ring'+str(1)] = pygame.mixer.Sound('sounds/crow.wav')
+sounds['ring'+str(1)] = pygame.mixer.Sound('sounds/didgeridoo.wav')
 sounds['ring'+str(2)] = pygame.mixer.Sound('sounds/snare.wav')
 sounds['ring'+str(3)] = pygame.mixer.Sound('sounds/yeah.wav')
 sounds['ring'+str(4)] = pygame.mixer.Sound('sounds/synth1.wav')
 sounds['ring'+str(5)] = pygame.mixer.Sound('sounds/thud.wav')
 sounds['ring'+str(6)] = pygame.mixer.Sound('sounds/alien.wav')
-sounds['ring'+str(7)] = pygame.mixer.Sound('sounds/didgeridoo.wav')
+sounds['ring'+str(7)] = pygame.mixer.Sound('sounds/crow.wav')
 sounds['ring'+str(8)] = pygame.mixer.Sound('sounds/wacktom.wav')
 sounds['ring'+str(9)] = pygame.mixer.Sound('sounds/lotom.wav')
 sounds['ring'+str(10)] = pygame.mixer.Sound('sounds/hihat.wav')
@@ -466,18 +466,17 @@ while running:
 			grid_surface.blit(font.render(str(k), True, 'white'), (x+hex_width/2-10, y+hex_height/2-10))
 		#compute next iteration
 		if not paused:
-			for k, hex in enumerate(old_hexagons):
-				neighbor_count = 0
-				for neighbor in hex[4]:
-					if old_hexagons[neighbor][1]:
-						neighbor_count += 1
-				if hex[1] == 1 and survival_rules[neighbor_count]:
-					state = 1
-				elif hex[1] == 0 and birth_rules[neighbor_count]:
-					state = 1
-				else:
-					state = 0
-				hexagons[k] = [hex[0],state,neighbor_count,hex[3],hex[4]]
+			neighbor_count = 0
+			for neighbor in hex[4]:
+				if old_hexagons[neighbor][1]:
+					neighbor_count += 1
+			if hex[1] == 1 and survival_rules[neighbor_count]:
+				state = 1
+			elif hex[1] == 0 and birth_rules[neighbor_count]:
+				state = 1
+			else:
+				state = 0
+			hexagons[k] = [hex[0],state,neighbor_count,hex[3],hex[4]]
 	#overlay grid
 	if show_grid:
 		for k, hex in enumerate(hexagons):
@@ -494,7 +493,7 @@ while running:
 		pygame.draw.line(grid_surface, 'white', center, endpoint, width=1)
 		angle += .01
 		for k,hex in enumerate(old_hexagons):
-			hex_center_rect = pygame.Rect(hex[0].x+0.5*hex_width-1, hex[0].y+0.5*hex_height-1, 2, 2)
+			hex_center_rect = pygame.Rect(hex[0].x+0.5*hex_width-1, hex[0].y+0.5*hex_height-1, (hex[3]+4)/4, (hex[3]+4)/4)
 			#pygame.draw.rect(grid_surface,'green',hex_center_rect,0)
 			if hex[1] and hex_center_rect.clipline(center,endpoint):
 				animated_hexagons.append([hex[0].x,hex[0].y])
