@@ -1,4 +1,4 @@
-# hexomata
+# hexomata and hexomata2
 a hexagonal cellular automata in pygame.
 
 Windows executable for old build of hexomata here https://drive.google.com/file/d/1MuouB4mwtbghTjz9N4Oa-fTxMP91IYJJ/view
@@ -6,6 +6,8 @@ Windows executable for old build of hexomata here https://drive.google.com/file/
 Hexomata2 is an 18 neighbor system with the ability to switch back to 6 neighbor. Windows executable here https://drive.google.com/file/d/14psNYcqUSVCzmia4938uJi_gPZOa8zIi/view
 
 Hexomata2 actually renders a 1920x1080 canvas that the application only sees a window of. Scroll around with the arrow keys.
+
+Hexomata3 is hexomata2 with a 3-state "brian's brain" system.
 
 Hexomata4 is a hexagonal shaped field that plays music samples. https://drive.google.com/file/d/19oJhZajtlbqZiC1oIOvqti80SIavXXPP/view?usp=sharing
 
