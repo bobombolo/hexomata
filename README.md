@@ -1,4 +1,4 @@
-# hexomata and hexomata2
+# hexomata
 a hexagonal cellular automata in pygame.
 
 Windows executable for old build of hexomata here https://drive.google.com/file/d/1MuouB4mwtbghTjz9N4Oa-fTxMP91IYJJ/view
