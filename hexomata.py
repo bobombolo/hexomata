@@ -10,6 +10,7 @@ pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 font = pygame.font.SysFont(None, 24)
 sound = True
+pygame.mixer.set_num_channels(16)
 #grow_sound = pygame.mixer.Sound('sounds/click.wav')
 tile_sound = pygame.mixer.Sound('sounds/clack.wav')
 yellow_sound = pygame.mixer.Sound('sounds/piano.11.ogg')

@@ -3,7 +3,6 @@ import pygame
 import pygame_gui
 import random
 import math
-pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
 width = 1024
 height = 600
@@ -17,17 +16,18 @@ pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 font = pygame.font.Font(None, 24)
 sound = True
+pygame.mixer.set_num_channels(16)
 grow_sound = pygame.mixer.Sound('sounds/click.wav')
 tile_sound = pygame.mixer.Sound('sounds/clack.wav')
 sounds = {}
 sounds['ring'+str(0)] = pygame.mixer.Sound('sounds/click.wav')
 sounds['ring'+str(1)] = pygame.mixer.Sound('sounds/crow.wav')
-sounds['ring'+str(2)] = pygame.mixer.Sound('sounds/laugh.wav')
+sounds['ring'+str(2)] = pygame.mixer.Sound('sounds/snare.wav')
 sounds['ring'+str(3)] = pygame.mixer.Sound('sounds/yeah.wav')
 sounds['ring'+str(4)] = pygame.mixer.Sound('sounds/synth1.wav')
 sounds['ring'+str(5)] = pygame.mixer.Sound('sounds/thud.wav')
 sounds['ring'+str(6)] = pygame.mixer.Sound('sounds/alien.wav')
-sounds['ring'+str(7)] = pygame.mixer.Sound('sounds/sweep.wav')
+sounds['ring'+str(7)] = pygame.mixer.Sound('sounds/didgeridoo.wav')
 sounds['ring'+str(8)] = pygame.mixer.Sound('sounds/wacktom.wav')
 sounds['ring'+str(9)] = pygame.mixer.Sound('sounds/lotom.wav')
 sounds['ring'+str(10)] = pygame.mixer.Sound('sounds/hihat.wav')
@@ -494,12 +494,13 @@ while running:
 		pygame.draw.line(grid_surface, 'white', center, endpoint, width=1)
 		angle += .01
 		for k,hex in enumerate(old_hexagons):
-			hex_center_rect = pygame.Rect(hex[0].x+0.5*hex_width-1, hex[0].y+0.5*hex_height-1, 3, 3)
+			hex_center_rect = pygame.Rect(hex[0].x+0.5*hex_width-1, hex[0].y+0.5*hex_height-1, 2, 2)
 			#pygame.draw.rect(grid_surface,'green',hex_center_rect,0)
 			if hex[1] and hex_center_rect.clipline(center,endpoint):
 				animated_hexagons.append([hex[0].x,hex[0].y])
-				sounds['ring'+str(hex[3])].set_volume((hex[2]+4)/10)
-				sounds['ring'+str(hex[3])].play()
+				if sound:
+					sounds['ring'+str(hex[3])].set_volume((hex[2]+4)/10)
+					sounds['ring'+str(hex[3])].play()
 	#render the flashing tiles
 	if animated_hexagons:
 		for k, hexagon in enumerate(animated_hexagons):
