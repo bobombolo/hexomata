@@ -16,7 +16,7 @@ pygame.display.set_caption('Hexomata')
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 font = pygame.font.Font(None, 24)
 sound = True
-pygame.mixer.set_num_channels(16)
+pygame.mixer.set_num_channels(32)
 grow_sound = pygame.mixer.Sound('sounds/click.wav')
 tile_sound = pygame.mixer.Sound('sounds/clack.wav')
 sounds = {}
@@ -33,6 +33,7 @@ sounds['ring'+str(9)] = pygame.mixer.Sound('sounds/lotom.wav')
 sounds['ring'+str(10)] = pygame.mixer.Sound('sounds/hihat.wav')
 sounds['ring'+str(11)] = pygame.mixer.Sound('sounds/bass.wav')
 sounds['ring'+str(12)] = pygame.mixer.Sound('sounds/snare.wav')
+music_slice = 60
 fps = 25
 survival_rules = [False,False,True,False,True,False,True]
 birth_rules = [False,True,False,True,False,True,False]
@@ -235,6 +236,13 @@ if sound:
 render_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((0, 370), (100, 30)),
 													text='Render',
 													manager=manager)
+pygame_gui.elements.UILabel(relative_rect=pygame.Rect((0,410),(100,20)),
+													manager=manager,
+													text='Music Slice:')
+slice_menu = pygame_gui.elements.UIDropDownMenu(relative_rect=pygame.Rect((0,430),(100,30)),
+													manager=manager,
+													options_list=['60','120','240','360','720'],
+													starting_option=str(music_slice))
 color_picker = None
 clock = pygame.time.Clock()
 running = True
@@ -288,7 +296,7 @@ while running:
 					color =  colors[k]
 					if color_picker:
 						color_picker.hide()
-					color_picker = pygame_gui.windows.UIColourPickerDialog(rect=pygame.Rect((100, 200), (390, 390)),
+					color_picker = pygame_gui.windows.UIColourPickerDialog(rect=pygame.Rect((450, 60), (390, 390)),
 													window_title='pick color for '+str(k)+' neighbors',
 													manager=manager,
 													initial_colour=pygame.Color(color)
@@ -307,6 +315,9 @@ while running:
 				hex_width = event.value
 				hex_height = int(hex_width * 0.8660254)
 				build_grid()
+		if event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+			if event.ui_element == slice_menu:
+				music_slice = int(event.text)
 		if event.type == pygame_gui.UI_BUTTON_PRESSED:
 			if event.ui_element == showgrid_button:
 				if show_grid:
@@ -492,6 +503,9 @@ while running:
 		endpoint = (super_width/2+rings*hex_height*math.cos(angle),super_height/2+rings*hex_height*math.sin(angle))
 		pygame.draw.line(grid_surface, 'white', center, endpoint, width=1)
 		angle += .01
+		if math.degrees(angle) >= music_slice:
+			angle = 0
+			paused = False
 		for k,hex in enumerate(old_hexagons):
 			hex_center_rect = pygame.Rect(hex[0].x+0.5*hex_width-1, hex[0].y+0.5*hex_height-1, (hex[3]+4)/4, (hex[3]+4)/4)
 			#pygame.draw.rect(grid_surface,'green',hex_center_rect,0)
@@ -508,20 +522,13 @@ while running:
 			draw_hexagon(x,y,'white',0)
 	animated_hexagons = []
 	#draw legend
-	swatch_x = 0
-	swatch_y = 0
 	legend_buttons = []
 	for i in range(0,7):
 		swatch_surf = pygame.Surface((25,25))
 		swatch_surf.fill(colors[i])
-		rect = screen.blit(swatch_surf,(swatch_x*30+8,swatch_y*30+405))
-		screen.blit(font.render(str(i),False,'Black'),(swatch_x*30+12,swatch_y*30+410))
+		rect = screen.blit(swatch_surf,(450+i*30,15))
+		screen.blit(font.render(str(i),False,'Black'),(460+i*30,20))
 		legend_buttons.append(rect)
-		if swatch_x == 2:
-			swatch_x = 0
-			swatch_y += 1
-		else: 
-			swatch_x += 1
 	if paused:
 		screen.blit(font.render('--PAUSED--',0,'White'),(10,height-30))
 	#detect a dead grid
